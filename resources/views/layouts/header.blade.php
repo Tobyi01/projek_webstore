@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
   <meta content="width=device-width, initial-scale=1.0" name="viewport">
-  <title>@yield('title', 'Orbit Bootstrap Template')</title>
+  <title>@yield('title', 'NesiaStore')</title>
   <meta name="description" content="">
   <meta name="keywords" content="">
 
@@ -34,17 +34,15 @@
     <div class="container position-relative d-flex align-items-center justify-content-between">
 
       <a href="{{ url('/') }}" class="logo d-flex align-items-center me-auto me-xl-0">
-        <h1 class="sitename">Orbit</h1><span>.</span>
+        <h1 class="sitename">NesiaStore</h1>
       </a>
 
       <nav id="navmenu" class="navmenu">
         <ul>
-          <li><a href="#hero" class="active">Home</a></li>
-          <li><a href="#about">About</a></li>
-          <li><a href="#services">Services</a></li>
-          <li><a href="#portfolio">Portfolio</a></li>
-          <li><a href="#team">Team</a></li>
-          <li><a href="#contact">Contact</a></li>
+          <li><a href="#hero" class="active">Beranda</a></li>
+          <li><a href="#about">Tentang Kami</a></li>
+          <li><a href="#services">Produk</a></li>
+          <li><a href="#contact">Kontak</a></li>
         </ul>
         <i class="mobile-nav-toggle d-xl-none bi bi-list"></i>
       </nav>

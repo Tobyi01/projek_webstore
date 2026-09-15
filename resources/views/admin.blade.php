@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Dashboard Admin - Orbit</title>
+    <title>Dashboard Admin - NesiaStore</title>
     <!-- Bootstrap CSS -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <!-- Bootstrap Icons -->
@@ -34,7 +34,7 @@
         <!-- Sidebar Navbar -->
         <nav class="col-md-3 col-lg-2 d-md-block sidebar collapse p-3">
             <a href="/" class="d-flex align-items-center mb-3 mb-md-0 me-md-auto text-white text-decoration-none fs-4 fw-bold">
-                Orbit Admin
+                NesiaStore Admin
             </a>
             <hr class="text-white">
             <ul class="nav nav-pills flex-column mb-auto">
@@ -158,6 +158,6 @@
     </div>
 </div>
 
-<script href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

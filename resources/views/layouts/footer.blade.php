@@ -3,10 +3,10 @@
   <div class="container footer-top">
     <div class="row gy-4">
       <div class="col-lg-3 col-md-6 footer-info">
-        <a href="index.html" class="logo d-flex align-items-center mb-4">
-          <span class="sitename">Orbit</span>
+        <a href="{{ url('/') }}" class="logo d-flex align-items-center mb-4">
+          <span class="sitename">NesiaStore</span>
         </a>
-        <p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Ut elit tellus, luctus nec ullamcorper mattis, pulvinar dapibus leo.</p>
+        <p>Temukan ikan hias pilihan dan perlengkapan terbaik untuk akuarium Anda.</p>
 
         <div class="social-links d-flex mt-4">
           <a href="#" aria-label="Twitter"><i class="bi bi-twitter-x"></i></a>
@@ -18,53 +18,44 @@
       </div>
 
       <div class="col-lg-2 col-md-6 footer-links">
-        <h4>Shop</h4>
+        <h4>Belanja</h4>
         <ul>
-          <li><a href="category.html">New Arrivals</a></li>
-          <li><a href="category.html">Best Sellers</a></li>
-          <li><a href="category.html">Sale Items</a></li>
-          <li><a href="category.html">Men's Collection</a></li>
-          <li><a href="category.html">Women's Collection</a></li>
-          <li><a href="category.html">Accessories</a></li>
+          <li><a href="/products">Ikan Hias</a></li>
+          <li><a href="/products">Pakan Ikan</a></li>
+          <li><a href="/products">Perlengkapan Akuarium</a></li>
         </ul>
       </div>
 
       <div class="col-lg-2 col-md-6 footer-links">
-        <h4>Customer Service</h4>
+        <h4>Layanan Pelanggan</h4>
         <ul>
-          <li><a href="contact.html">Contact Us</a></li>
-          <li><a href="faq.html">FAQs</a></li>
-          <li><a href="shiping-info.html">Shipping &amp; Returns</a></li>
-          <li><a href="#">Size Guide</a></li>
-          <li><a href="account.html">Track Order</a></li>
-          <li><a href="#">Gift Cards</a></li>
+          <li><a href="#contact">Hubungi Kami</a></li>
+          <li><a href="#faq">Pertanyaan Umum</a></li>
+          <li><a href="#shipping">Pengiriman &amp; Retur</a></li>
         </ul>
       </div>
 
       <div class="col-lg-2 col-md-6 footer-links">
-        <h4>Company</h4>
+        <h4>Informasi</h4>
         <ul>
-          <li><a href="about.html">About Us</a></li>
-          <li><a href="about.html">Careers</a></li>
-          <li><a href="blog.html">Blog</a></li>
-          <li><a href="about.html">Sustainability</a></li>
-          <li><a href="about.html">Affiliate Program</a></li>
-          <li><a href="about.html">Store Locator</a></li>
+          <li><a href="#about">Tentang Kami</a></li>
+          <li><a href="#blog">Blog</a></li>
+          <li><a href="#store">Lokasi Toko</a></li>
         </ul>
       </div>
 
       <div class="col-lg-3 col-md-6">
         <div class="footer-newsletter">
-          <h4>Stay Updated</h4>
-          <p>Subscribe to our newsletter for exclusive offers, new arrivals, and fashion tips.</p>
-          <form action="forms/newsletter.php" method="post" class="php-email-form">
+          <h4>Dapatkan Informasi Terbaru</h4>
+          <p>Berlangganan untuk mendapatkan kabar produk dan promo terbaru.</p>
+          <form action="#" method="post" class="php-email-form">
             <div class="position-relative">
-              <input type="email" name="email" placeholder="Your Email" required="">
+              <input type="email" name="email" placeholder="Email Anda" required="">
               <button type="submit" class="btn-subscribe"><i class="bi bi-arrow-right"></i></button>
             </div>
             <div class="loading">Loading</div>
             <div class="error-message"></div>
-            <div class="sent-message">Your subscription request has been sent. Thank you!</div>
+            <div class="sent-message">Terima kasih, email Anda sudah terdaftar.</div>
           </form>
         </div>
       </div>
@@ -75,7 +66,7 @@
     <div class="row gy-3">
       <div class="col-md-6 order-2 order-md-1">
         <div class="copyright">
-          <p>© <span>Copyright</span> <strong class="sitename">Orbit</strong>. All Rights Reserved.</p>
+          <p>© <span>Copyright</span> <strong class="sitename">NesiaStore</strong>. All Rights Reserved.</p>
         </div>
         <div class="credits">
           Designed by <a href="https://bootstrapmade.com/">BootstrapMade</a> | <a href="https://bootstrapmade.com/tools/">DevTools</a>
