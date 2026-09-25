@@ -6,7 +6,7 @@
 
     <div class="card shadow-sm"> 
         <div class="card-body"> 
-            <form action="{{ route('products.store') }}" method="POST"> 
+            <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data"> 
                 @csrf 
                 
                 {{-- Memanggil potongan form --}}

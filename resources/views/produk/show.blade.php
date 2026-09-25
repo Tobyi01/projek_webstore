@@ -18,6 +18,19 @@
             <table class="table">
 
                 <tr>
+                    <th>Image</th>
+                    <td>
+                        @if($product->image)
+                            <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="rounded border" style="width: 180px; height: 140px; object-fit: cover;">
+                        @else
+                            <div class="d-flex align-items-center justify-content-center rounded border bg-light text-muted" style="width: 180px; height: 140px;">
+                                <i class="bi bi-image fs-2" aria-hidden="true"></i>
+                            </div>
+                        @endif
+                    </td>
+                </tr>
+
+                <tr>
                     <th width="200">Nama</th>
                     <td>{{ $product->name }}</td>
                 </tr>

@@ -29,6 +29,9 @@
                 <a href="{{ route('products.index') }}" class="nav-link active">
                     <i class="bi bi-box-seam me-2"></i>Produk
                 </a>
+                <a href="{{ route('kasir.index') }}" class="nav-link">
+                    <i class="bi bi-cart3 me-2"></i>Kasir
+                </a>
             </nav>
             <hr class="text-white">
             <form method="POST" action="{{ route('logout') }}">

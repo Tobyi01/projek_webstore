@@ -30,6 +30,7 @@
                     <thead class="table-light"> 
                         <tr> 
                             <th width="60">No</th> 
+                            <th>Image</th>
                             <th>Product</th> 
                             <th>Kategori</th> 
                             <th>Harga</th> 
@@ -42,6 +43,15 @@
                         @forelse($products as $product) 
                             <tr> 
                                 <td>{{ $products->firstItem() + $loop->index }}</td> 
+                                <td>
+                                    @if($product->image)
+                                        <img src="{{ Storage::url($product->image) }}" alt="{{ $product->name }}" class="rounded border" style="width: 64px; height: 64px; object-fit: cover;">
+                                    @else
+                                        <div class="d-flex align-items-center justify-content-center rounded border bg-light text-muted" style="width: 64px; height: 64px;" title="Belum ada gambar">
+                                            <i class="bi bi-image" aria-hidden="true"></i>
+                                        </div>
+                                    @endif
+                                </td>
                                 <td> 
                                     <strong>{{ $product->name }}</strong> 
                                     @if($product->description) 
@@ -82,7 +92,7 @@
                             </tr> 
                         @empty 
                             <tr> 
-                                <td colspan="7" class="text-center py-4">Belum ada data product.</td> 
+                                <td colspan="8" class="text-center py-4">Belum ada data product.</td> 
                             </tr> 
                         @endforelse 
                     </tbody> 

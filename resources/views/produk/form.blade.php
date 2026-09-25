@@ -68,12 +68,28 @@
 <div class="mb-3">
     <label class="form-label">Image</label>
     <input
-        type="text"
+        id="product-image"
+        type="file"
         name="image"
-        class="form-control"
-        value="{{ old('image', $product->image ?? '') }}"
-        placeholder="nama-file.jpg"
+        class="form-control @error('image') is-invalid @enderror"
+        accept="image/jpeg,image/png,image/webp,image/gif"
     >
+    <div class="form-text">Format JPG, PNG, WEBP, atau GIF. Maksimal 2 MB.</div>
+
+    @error('image')
+        <div class="invalid-feedback">{{ $message }}</div>
+    @enderror
+
+    <div class="mt-2">
+        <img
+            id="product-image-preview"
+            src="{{ !empty($product?->image) ? Storage::url($product->image) : '' }}"
+            alt="Preview gambar produk"
+            class="rounded border {{ empty($product?->image) ? 'd-none' : '' }}"
+            style="width: 160px; height: 120px; object-fit: cover;"
+        >
+        <span id="product-image-empty" class="text-muted {{ !empty($product?->image) ? 'd-none' : '' }}">Belum ada gambar.</span>
+    </div>
 </div>
 
 <div class="form-check mb-3">
@@ -90,3 +106,21 @@
         Product Aktif
     </label>
 </div>
+
+<script>
+    document.getElementById('product-image').addEventListener('change', function (event) {
+        const file = event.target.files[0];
+        const preview = document.getElementById('product-image-preview');
+        const emptyState = document.getElementById('product-image-empty');
+
+        if (!file) {
+            preview.classList.toggle('d-none', !preview.getAttribute('src'));
+            emptyState.classList.toggle('d-none', Boolean(preview.getAttribute('src')));
+            return;
+        }
+
+        preview.src = URL.createObjectURL(file);
+        preview.classList.remove('d-none');
+        emptyState.classList.add('d-none');
+    });
+</script>
