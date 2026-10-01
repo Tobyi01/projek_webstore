@@ -2,65 +2,129 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Product;
+use App\Models\Sale;
+use App\Services\ReceiptPrinter;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
-use Mike42\Escpos\Printer;
-use Mike42\Escpos\EscposImage;
-use Mike42\Escpos\GdEscposImage;
-use Mike42\Escpos\PrintConnectors\WindowsPrintConnector;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 
 class StrukController extends Controller
 {
-    function cetak() {
-        try {
-            $imagePath = public_path('images/pertamina2.png');
+    public function cetak(Request $request, ReceiptPrinter $receiptPrinter): JsonResponse
+    {
+        $data = $request->validate([
+            'transaction_number' => ['required', 'string', 'max:60', 'unique:sales,transaction_number'],
+            'customer' => ['required', 'string', 'max:120'],
+            'payment_method' => ['required', 'in:Tunai,QRIS,Debit,Kredit,E-Wallet,Transfer'],
+            'discount_percent' => ['nullable', 'numeric', 'min:0', 'max:100'],
+            'discount_amount' => ['nullable', 'numeric', 'min:0'],
+            'tax' => ['nullable', 'numeric', 'min:0'],
+            'other_fee' => ['nullable', 'numeric', 'min:0'],
+            'paid' => ['required', 'numeric', 'min:0'],
+            'items' => ['required', 'array', 'min:1', 'max:100'],
+            'items.*.product_id' => ['required', 'integer', 'exists:products,id'],
+            'items.*.qty' => ['required', 'integer', 'min:1', 'max:999'],
+        ]);
 
-            if (!file_exists($imagePath)) {
-                throw new \RuntimeException('Logo struk tidak ditemukan pada path: ' . $imagePath);
-            }
+        $quantities = collect($data['items'])
+            ->groupBy('product_id')
+            ->map(fn ($items): int => (int) $items->sum('qty'));
 
-            $connector = new WindowsPrintConnector("VSC80");
-            $printer = new Printer($connector);
+        $sale = DB::transaction(function () use ($data, $quantities, $request): Sale {
+            $products = Product::query()
+                ->whereIn('id', $quantities->keys())
+                ->lockForUpdate()
+                ->get()
+                ->keyBy('id');
 
-            try {
-                if (file_exists($imagePath)) {
-                    $image = GdEscposImage::load($imagePath, false);
-                    $printer->bitImage($image);
+            $saleItems = [];
+            $subtotal = 0;
+
+            foreach ($quantities as $productId => $quantity) {
+                $product = $products->get((int) $productId);
+
+                if (!$product || !$product->is_active || $product->stock < $quantity) {
+                    throw ValidationException::withMessages([
+                        'items' => 'Produk tidak aktif atau stok tidak mencukupi: ' . ($product?->name ?? 'produk tidak ditemukan'),
+                    ]);
                 }
-            } catch (\Throwable $e) {
-                // Jika logo tidak valid untuk escpos, tetap lanjut cetak text saja
-                $printer->text("[Logo tidak dapat dimuat]\n");
+
+                $unitPrice = (float) $product->price;
+                $lineTotal = round($unitPrice * $quantity, 2);
+                $subtotal += $lineTotal;
+                $saleItems[] = [
+                    'product' => $product,
+                    'quantity' => $quantity,
+                    'unit_price' => $unitPrice,
+                    'line_total' => $lineTotal,
+                ];
             }
 
-            $printer->setFont(Printer::FONT_A);
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->selectPrintMode(Printer::MODE_EMPHASIZED | Printer::MODE_DOUBLE_HEIGHT);
-            $printer->text("Nama Toko\n");
-            $printer->selectPrintMode();
-            $printer->text("Alamat Toko\n");
-            $printer->setJustification(Printer::JUSTIFY_LEFT);
-            $printer->text("Tanggal: " . date('Y-m-d H:i:s') . "\n");
-            $printer->text("--------------------------------------------------\n");
-            // Diulang
-            $printer->setFont(Printer::FONT_B);
-            $printer->text("Item 1    Rp 10.000\n");
-            $printer->text("Item 2    Rp 15.000\n");
+            $subtotal = round($subtotal, 2);
+            $discountPercent = (float) ($data['discount_percent'] ?? 0);
+            $percentDiscount = round($subtotal * $discountPercent / 100, 2);
+            $amountDiscount = (float) ($data['discount_amount'] ?? 0);
+            $tax = (float) ($data['tax'] ?? 0);
+            $otherFee = (float) ($data['other_fee'] ?? 0);
+            $total = round(max(0, $subtotal - $percentDiscount - $amountDiscount + $tax + $otherFee), 2);
+            $paid = round((float) $data['paid'], 2);
 
-            $printer->setFont(Printer::FONT_A);
-            $printer->text("------------------------------\n");
-            $printer->setJustification(Printer::JUSTIFY_RIGHT);
-            $printer->text("Total   Rp 25.000\n");
-            $printer->setJustification(Printer::JUSTIFY_CENTER);
-            $printer->text("\nTerima kasih atas kunjungan Anda!\n");
+            if ($paid < $total) {
+                throw ValidationException::withMessages(['paid' => 'Jumlah pembayaran kurang.']);
+            }
 
-            // Potong kertas
-            $printer->cut();
+            $sale = Sale::create([
+                'transaction_number' => $data['transaction_number'],
+                'user_id' => $request->user()->id,
+                'customer' => $data['customer'],
+                'payment_method' => $data['payment_method'],
+                'subtotal' => $subtotal,
+                'discount_percent' => $discountPercent,
+                'discount_amount' => $amountDiscount,
+                'tax' => $tax,
+                'other_fee' => $otherFee,
+                'total' => $total,
+                'paid' => $paid,
+                'change' => round($paid - $total, 2),
+                'sold_at' => now(),
+            ]);
 
-            // Tutup koneksi printer
-            $printer->close();
+            foreach ($saleItems as $item) {
+                $sale->items()->create([
+                    'product_id' => $item['product']->id,
+                    'product_name' => $item['product']->name,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $item['unit_price'],
+                    'line_total' => $item['line_total'],
+                ]);
+                $item['product']->decrement('stock', $item['quantity']);
+            }
 
-            return response()->json(['success' => true, 'message' => 'Struk berhasil dicetak']);
-        } catch (\Exception $e) {
-            return response()->json(['error' => 'Gagal mencetak struk: ' . $e->getMessage()], 500);
+            return $sale->load('items');
+        });
+
+        try {
+            $receiptPrinter->print($sale);
+
+            return response()->json([
+                'success' => true,
+                'transaction_number' => $sale->transaction_number,
+                'message' => 'Transaksi tersimpan dan struk berhasil dicetak.',
+            ]);
+        } catch (\Throwable $exception) {
+            Log::error('Receipt printing failed after saving sale.', [
+                'transaction_number' => $sale->transaction_number,
+                'message' => $exception->getMessage(),
+            ]);
+
+            return response()->json([
+                'success' => false,
+                'transaction_saved' => true,
+                'message' => 'Transaksi tersimpan, tetapi printer kasir tidak dapat mencetak struk.',
+            ], 503);
         }
     }
 }
