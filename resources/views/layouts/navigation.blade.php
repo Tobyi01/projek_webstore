@@ -1,4 +1,4 @@
-<nav x-data="{ open: false }" class="bg-white dark:bg-gray-800 border-b border-gray-100 dark:border-gray-700">
+<nav x-data="{ open: false }" class="border-b border-gray-100 dark:border-gray-700" style="background: linear-gradient(90deg, #f4fff9 0%, #ffffff 35%, #f0fdf7 100%);">
     <!-- Primary Navigation Menu -->
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <div class="flex justify-between h-16">
@@ -15,15 +15,23 @@
                     <x-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                         {{ __('Dashboard') }}
                     </x-nav-link>
-                    <x-nav-link :href="route('kasir.index')" :active="request()->routeIs('kasir.*')">
-                        {{ __('Kasir') }}
-                    </x-nav-link>
                     @if (Auth::user()->role === 'admin')
-                        <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
+                        <x-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')" style="color: #0d5e3c; font-weight: 700;">
                             {{ __('Produk') }}
+                        </x-nav-link>
+                        <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')" style="color: #0d5e3c; font-weight: 700;">
+                            {{ __('Riwayat') }}
+                        </x-nav-link>
+                    @else
+                        <x-nav-link :href="route('kasir.index')" :active="request()->routeIs('kasir.*')" style="color: #0d5e3c; font-weight: 700;">
+                            {{ __('Kasir') }}
                         </x-nav-link>
                     @endif
                 </div>
+            </div>
+
+            <div class="hidden sm:flex sm:items-center sm:ms-4">
+                <span class="inline-flex items-center rounded-full border border-emerald-200 bg-emerald-50 px-2.5 py-1 text-[10px] font-bold tracking-[0.18em] text-emerald-700">{{ Auth::user()->role === 'admin' ? 'ADMIN' : 'KASIR' }}</span>
             </div>
 
             <!-- Settings Dropdown -->
@@ -47,14 +55,12 @@
                         </x-dropdown-link>
 
                         <!-- Authentication -->
-                        <form method="POST" action="{{ route('logout') }}">
+                        <form method="POST" action="{{ route('logout') }}" class="w-full">
                             @csrf
 
-                            <x-dropdown-link :href="route('logout')"
-                                    onclick="event.preventDefault();
-                                                this.closest('form').submit();">
+                            <button type="submit" class="block w-full px-4 py-2 text-start text-sm leading-5 text-gray-700 dark:text-gray-300 hover:bg-gray-100 dark:hover:bg-gray-800 focus:outline-none focus:bg-gray-100 dark:focus:bg-gray-800 transition duration-150 ease-in-out">
                                 {{ __('Log Out') }}
-                            </x-dropdown-link>
+                            </button>
                         </form>
                     </x-slot>
                 </x-dropdown>
@@ -78,12 +84,16 @@
             <x-responsive-nav-link :href="route('dashboard')" :active="request()->routeIs('dashboard')">
                 {{ __('Dashboard') }}
             </x-responsive-nav-link>
-            <x-responsive-nav-link :href="route('kasir.index')" :active="request()->routeIs('kasir.*')">
-                {{ __('Kasir') }}
-            </x-responsive-nav-link>
             @if (Auth::user()->role === 'admin')
                 <x-responsive-nav-link :href="route('products.index')" :active="request()->routeIs('products.*')">
                     {{ __('Produk') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
+                    {{ __('Riwayat') }}
+                </x-responsive-nav-link>
+            @else
+                <x-responsive-nav-link :href="route('kasir.index')" :active="request()->routeIs('kasir.*')">
+                    {{ __('Kasir') }}
                 </x-responsive-nav-link>
             @endif
         </div>
@@ -101,14 +111,12 @@
                 </x-responsive-nav-link>
 
                 <!-- Authentication -->
-                <form method="POST" action="{{ route('logout') }}">
+                <form method="POST" action="{{ route('logout') }}" class="w-full">
                     @csrf
 
-                    <x-responsive-nav-link :href="route('logout')"
-                            onclick="event.preventDefault();
-                                        this.closest('form').submit();">
+                    <button type="submit" class="block w-full ps-3 pe-4 py-2 border-l-4 border-transparent text-start text-base font-medium text-gray-600 dark:text-gray-400 hover:text-gray-800 dark:hover:text-gray-200 hover:bg-gray-50 dark:hover:bg-gray-700 hover:border-gray-300 dark:hover:border-gray-600 focus:outline-none focus:text-gray-800 dark:focus:text-gray-200 focus:bg-gray-50 dark:focus:bg-gray-700 focus:border-gray-300 dark:focus:border-gray-600 transition duration-150 ease-in-out">
                         {{ __('Log Out') }}
-                    </x-responsive-nav-link>
+                    </button>
                 </form>
             </div>
         </div>

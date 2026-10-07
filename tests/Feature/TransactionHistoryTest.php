@@ -69,10 +69,59 @@ class TransactionHistoryTest extends TestCase
         $this->assertSame(5, $product->fresh()->stock);
     }
 
+    public function test_non_cash_payment_methods_save_exact_payment_without_change(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->createProduct(stock: 10, price: 3000);
+        $printer = Mockery::mock(ReceiptPrinter::class);
+        $printer->shouldReceive('print')->times(5);
+        $this->instance(ReceiptPrinter::class, $printer);
+
+        foreach (['QRIS', 'Debit', 'Kredit', 'E-Wallet', 'Transfer'] as $index => $method) {
+            $this->actingAs($user)->postJson(route('struk.cetak'), [
+                'transaction_number' => 'TRX-NONCASH-' . $index,
+                'customer' => 'Umum',
+                'payment_method' => $method,
+                'paid' => 3000,
+                'items' => [['product_id' => $product->id, 'qty' => 1]],
+            ])->assertOk()->assertJsonPath('success', true);
+
+            $this->assertDatabaseHas('sales', [
+                'transaction_number' => 'TRX-NONCASH-' . $index,
+                'payment_method' => $method,
+                'total' => 3000,
+                'paid' => 3000,
+                'change' => 0,
+            ]);
+        }
+
+        $this->assertSame(5, $product->fresh()->stock);
+    }
+
+    public function test_non_cash_payment_rejects_a_paid_amount_different_from_total(): void
+    {
+        $user = User::factory()->create();
+        $product = $this->createProduct(stock: 5, price: 3000);
+        $printer = Mockery::mock(ReceiptPrinter::class);
+        $printer->shouldNotReceive('print');
+        $this->instance(ReceiptPrinter::class, $printer);
+
+        $this->actingAs($user)->postJson(route('struk.cetak'), [
+            'transaction_number' => 'TRX-NONCASH-INVALID',
+            'customer' => 'Umum',
+            'payment_method' => 'QRIS',
+            'paid' => 4000,
+            'items' => [['product_id' => $product->id, 'qty' => 1]],
+        ])->assertUnprocessable()->assertJsonValidationErrors('paid');
+
+        $this->assertDatabaseCount('sales', 0);
+        $this->assertSame(5, $product->fresh()->stock);
+    }
+
     public function test_history_can_filter_by_day_month_and_year(): void
     {
         Carbon::setTestNow('2026-09-29 12:00:00');
-        $user = User::factory()->create();
+        $user = User::factory()->create(['role' => 'admin']);
         $this->createSale($user, 'TRX-DAY', '2026-09-29 10:00:00');
         $this->createSale($user, 'TRX-MONTH', '2026-09-12 10:00:00');
         $this->createSale($user, 'TRX-PREVIOUS-MONTH', '2026-08-21 10:00:00');

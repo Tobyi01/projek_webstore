@@ -6,7 +6,9 @@
                     <div class="dashboard-meta"><span class="dashboard-live"><i></i> WORKSPACE AKTIF</span><span class="dashboard-date">{{ now()->format('d / m / Y') }}</span></div>
                     <h1>Selamat datang,<br><span>{{ Auth::user()->name }}</span></h1>
                     <p>Semua kebutuhan operasional toko dalam satu tempat. Mau mulai dari mana hari ini?</p>
-                    <a href="{{ route('kasir.index') }}" class="dashboard-primary"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i>Mulai transaksi<i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+                    @unless (Auth::user()->role === 'admin')
+                        <a href="{{ route('kasir.index') }}" class="dashboard-primary"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i>Mulai transaksi<i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+                    @endunless
                 </div>
                 <aside class="activity-board" aria-label="Status aktivitas workspace">
                     <div class="activity-top"><div class="activity-brand"><span><i class="bi bi-shop" aria-hidden="true"></i></span><div><strong>NesiaStore</strong><small>RINGKASAN WORKSPACE</small></div></div><span class="activity-status"><i></i>Online</span></div>
@@ -22,7 +24,9 @@
             <section class="workspace-section" aria-labelledby="workspace-title">
                 <div class="section-heading"><div><span class="dashboard-eyebrow">PINTASAN KERJA</span><h2 id="workspace-title">Lanjutkan pekerjaan</h2></div><span class="section-note">Pilih menu untuk mulai</span></div>
                 <div class="quick-grid">
-                    <a href="{{ route('kasir.index') }}" class="quick-card quick-card-primary"><span class="quick-icon"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></span><span class="quick-card-copy"><strong>Transaksi baru</strong><small>Buka halaman kasir</small></span><i class="bi bi-arrow-up-right quick-arrow" aria-hidden="true"></i></a>
+                    @unless (Auth::user()->role === 'admin')
+                        <a href="{{ route('kasir.index') }}" class="quick-card quick-card-primary"><span class="quick-icon"><i class="bi bi-receipt-cutoff" aria-hidden="true"></i></span><span class="quick-card-copy"><strong>Transaksi baru</strong><small>Buka halaman kasir</small></span><i class="bi bi-arrow-up-right quick-arrow" aria-hidden="true"></i></a>
+                    @endunless
                     @if (Auth::user()->role === 'admin')
                         <a href="{{ route('products.create') }}" class="quick-card"><span class="quick-icon"><i class="bi bi-plus-square" aria-hidden="true"></i></span><span class="quick-card-copy"><strong>Tambah produk</strong><small>Masukkan ke katalog</small></span><i class="bi bi-arrow-up-right quick-arrow" aria-hidden="true"></i></a>
                         <a href="{{ route('products.index') }}" class="quick-card"><span class="quick-icon"><i class="bi bi-grid-3x3-gap" aria-hidden="true"></i></span><span class="quick-card-copy"><strong>Kelola produk</strong><small>Lihat katalog toko</small></span><i class="bi bi-arrow-up-right quick-arrow" aria-hidden="true"></i></a>
@@ -32,7 +36,7 @@
 
             <section class="account-strip" aria-label="Status akun">
                 <div class="account-identity"><span class="account-avatar">{{ strtoupper(substr(Auth::user()->name, 0, 1)) }}</span><div><span class="dashboard-eyebrow">AKUN AKTIF</span><strong>{{ Auth::user()->name }}</strong><small>{{ Auth::user()->email }}</small></div></div>
-                <div class="account-message"><span class="account-check"><i class="bi bi-shield-check" aria-hidden="true"></i></span><div><strong>Workspace siap digunakan</strong><small>@if (Auth::user()->role === 'admin') Produk, stok, dan kasir dapat diakses dari menu utama. @else Kasir dan kelola transaksi dapat diakses dari menu utama. @endif</small></div></div>
+                <div class="account-message"><span class="account-check"><i class="bi bi-shield-check" aria-hidden="true"></i></span><div><strong>Workspace siap digunakan</strong><small>@if (Auth::user()->role === 'admin') Produk, stok, dan riwayat transaksi dapat diakses dari menu utama. @else Kasir dan kelola transaksi dapat diakses dari menu utama. @endif</small></div></div>
                 <a href="{{ route('profile.edit') }}" class="account-link">Pengaturan akun <i class="bi bi-arrow-right" aria-hidden="true"></i></a>
             </section>
         </div>

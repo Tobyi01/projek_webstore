@@ -83,7 +83,11 @@
         .input-wrap { position: relative; }
         .input-wrap span { position: absolute; top: 50%; left: .85rem; color: #536684; font-size: .9rem; transform: translateY(-50%); }
         .input-wrap input { width: 100%; height: 2.8rem; padding: 0 .9rem 0 2.45rem; border: 1px solid var(--line); border-radius: .45rem; outline: none; color: var(--ink); background: #fff; font-size: .75rem; transition: border-color .2s, box-shadow .2s; }
+        .input-wrap input[type="password"], .input-wrap input[type="text"] { padding-right: 6.5rem; }
         .input-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23, 105, 237, .12); }
+        .password-toggle { position: absolute; top: 50%; right: .75rem; display: grid; width: 2rem; height: 2rem; padding: .35rem; place-items: center; border: 0; color: #536684; background: transparent; cursor: pointer; transform: translateY(-50%); }
+        .password-toggle svg { width: 1.1rem; height: 1.1rem; }
+        .password-toggle:focus-visible { border-radius: .25rem; outline: 2px solid var(--blue); outline-offset: 2px; }
         .form-options { display: flex; align-items: center; justify-content: space-between; margin: -.25rem 0 1.25rem; color: #62718c; font-size: .7rem; }
         .remember { display: flex; align-items: center; gap: .4rem; }
         .remember input { accent-color: var(--blue); }
@@ -138,7 +142,7 @@
                     </div>
                     <div class="field">
                         <label for="password">Password</label>
-                        <div class="input-wrap"><span>▣</span><input id="password" type="password" name="password" placeholder="Masukkan password Anda" required autocomplete="current-password"></div>
+                        <div class="input-wrap" data-password-toggle><span>▣</span><input id="password" type="password" name="password" placeholder="Masukkan password Anda" required autocomplete="current-password"><button class="password-toggle" type="button" data-password-toggle-button aria-label="Tampilkan password" aria-pressed="false"><svg data-password-visible-icon aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"><path stroke-linecap="round" stroke-linejoin="round" d="M2.25 12s3.5-6.75 9.75-6.75S21.75 12 21.75 12s-3.5 6.75-9.75 6.75S2.25 12 2.25 12Z"/><circle cx="12" cy="12" r="3"/></svg><svg data-password-hidden-icon aria-hidden="true" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" style="display: none;"><path stroke-linecap="round" stroke-linejoin="round" d="M3 3l18 18M10.58 10.59a2 2 0 0 0 2.83 2.83M9.88 5.24A10.9 10.9 0 0 1 12 5.03c6.25 0 9.75 6.97 9.75 6.97a16.2 16.2 0 0 1-3.06 3.92M6.23 6.23C3.61 7.99 2.25 12 2.25 12s3.5 6.97 9.75 6.97c1.1 0 2.1-.23 3-.61"/></svg></button></div>
                     </div>
                     <div class="form-options">
                         <label class="remember"><input type="checkbox" name="remember"> Ingat saya</label>
@@ -151,5 +155,6 @@
             </div>
         </section>
     </main>
+    <script src="{{ asset('js/password-toggle.js') }}" defer></script>
 </body>
 </html>

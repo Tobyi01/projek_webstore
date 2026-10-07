@@ -72,8 +72,14 @@ class StrukController extends Controller
             $total = round(max(0, $subtotal - $percentDiscount - $amountDiscount + $tax + $otherFee), 2);
             $paid = round((float) $data['paid'], 2);
 
-            if ($paid < $total) {
+            if ($data['payment_method'] === 'Tunai' && $paid < $total) {
                 throw ValidationException::withMessages(['paid' => 'Jumlah pembayaran kurang.']);
+            }
+
+            if ($data['payment_method'] !== 'Tunai' && $paid !== $total) {
+                throw ValidationException::withMessages([
+                    'paid' => 'Pembayaran non-tunai harus sesuai dengan total transaksi.',
+                ]);
             }
 
             $sale = Sale::create([
@@ -88,7 +94,7 @@ class StrukController extends Controller
                 'other_fee' => $otherFee,
                 'total' => $total,
                 'paid' => $paid,
-                'change' => round($paid - $total, 2),
+                'change' => $data['payment_method'] === 'Tunai' ? round($paid - $total, 2) : 0,
                 'sold_at' => now(),
             ]);
 
