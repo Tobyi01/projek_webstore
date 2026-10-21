@@ -4,6 +4,9 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <title>NesiaStore - Retail Workspace</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
+    <link rel="icon" type="image/png" sizes="128x128" href="{{ asset('assets/img/favicon.png') }}?v=20261021-2">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}?v=20261021-2">
     <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
     <style>
         :root { --ink: #12284a; --blue: #1769dc; --blue-dark: #0e4fae; --sky: #eaf3ff; --cyan: #c9f4fb; --muted: #687d9d; --line: #dce7f5; }
@@ -16,7 +19,7 @@
         .site-nav, .hero-grid, .feature-strip { margin: 0 auto; max-width: 76rem; width: calc(100% - 3rem); }
         .site-nav { align-items: center; animation: welcome-in .55s ease both; border-bottom: 1px solid rgba(30,79,145,.11); display: flex; justify-content: space-between; padding: 1.15rem 0; }
         .brand-mark { align-items: center; color: var(--ink); display: flex; gap: .65rem; text-decoration: none; }
-        .mark { background: #fff; border: 1px solid var(--line); border-radius: .65rem; height: 2.8rem; object-fit: contain; padding: .45rem; width: 2.8rem; }
+        .mark { background: #fff; border: 1px solid var(--line); border-radius: .65rem; height: 2.8rem; object-fit: contain; padding: .15rem; width: 2.8rem; }
         .brand-mark strong { display: block; font-size: 1rem; }.brand-mark small { color: var(--muted); display: block; font-size: .62rem; margin-top: .15rem; }
         .auth-links { align-items: center; display: flex; gap: 1rem; }
         .auth-button { border-radius: .45rem; color: var(--ink); font-size: .75rem; font-weight: 700; padding: .7rem .95rem; text-decoration: none; transition: background .2s, color .2s, transform .2s; }
@@ -41,7 +44,7 @@
         .pos-window { background: #fff; border: 1px solid #d7e4f5; border-radius: 1rem; box-shadow: 0 1.7rem 3.8rem rgba(28,71,132,.16); padding: .8rem; position: absolute; right: 0; top: .25rem; transform: rotate(1deg); width: min(100%, 32rem); }
         .pos-toolbar { align-items: center; display: flex; justify-content: space-between; padding: .45rem .45rem .85rem; }
         .mini-brand { align-items: center; display: flex; gap: .55rem; }.mini-brand > span:last-child { color: var(--ink); font-size: .68rem; font-weight: 800; }.mini-brand small { color: #8193ad; display: block; font-size: .48rem; letter-spacing: .08em; margin-top: .12rem; }
-        .mini-mark { align-items: center; background: var(--blue); border-radius: .45rem; color: #fff; display: flex; font-size: .95rem; height: 2rem; justify-content: center; width: 2rem; }
+        .mini-mark { background: #fff; border-radius: .45rem; display: block; height: 2rem; object-fit: contain; padding: .1rem; width: 2rem; }
         .pos-indicator { align-items: center; background: #edf8f2; border-radius: 2rem; color: #39815b; display: flex; font-size: .52rem; font-weight: 800; gap: .35rem; padding: .4rem .55rem; }.pos-indicator i { background: #42b779; border-radius: 50%; height: .4rem; width: .4rem; }
         .pos-content { background: #f5f8fd; border: 1px solid #eaf0f8; border-radius: .7rem; display: grid; gap: .7rem; grid-template-columns: 1.05fr .95fr; min-height: 20rem; padding: .7rem; }
         .terminal-panel { align-items: center; background: #1769dc; border-radius: .6rem; color: #fff; display: flex; flex-direction: column; justify-content: center; min-height: 18.5rem; overflow: hidden; padding: 1rem; position: relative; text-align: center; }
@@ -74,7 +77,7 @@
     <main class="splash" aria-label="NesiaStore">
         <section class="hero-band">
             <nav class="site-nav" aria-label="Navigasi utama">
-                <a class="brand-mark" href="{{ url('/') }}"><img class="mark" src="{{ asset('assets/img/logo.webp') }}" alt=""><span><strong>NesiaStore</strong><small>Retail workspace</small></span></a>
+                <a class="brand-mark" href="{{ url('/') }}"><img class="mark" src="{{ asset('assets/img/nesia-logo.png') }}" alt=""><span><strong>NesiaStore</strong><small>Retail workspace</small></span></a>
                 <div class="auth-links"><a class="auth-button" href="{{ route('login') }}">Masuk</a><a class="auth-button register-button" href="{{ route('register') }}">Buat akun</a></div>
             </nav>
             <div class="hero-grid">
@@ -88,7 +91,7 @@
                 <div class="pos-scene" aria-label="Pratinjau workspace kasir">
                     <div class="pos-window">
                         <div class="pos-toolbar">
-                            <div class="mini-brand"><span class="mini-mark"><i class="bi bi-shop" aria-hidden="true"></i></span><span>NesiaStore<small>POINT OF SALE</small></span></div>
+                            <div class="mini-brand"><img class="mini-mark" src="{{ asset('assets/img/nesia-logo.png') }}" alt=""><span>NesiaStore<small>POINT OF SALE</small></span></div>
                             <span class="pos-indicator"><i aria-hidden="true"></i>SIAP</span>
                         </div>
                         <div class="pos-content">

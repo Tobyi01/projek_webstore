@@ -4,6 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Masuk - NesiaStore</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
+    <link rel="icon" type="image/png" sizes="128x128" href="{{ asset('assets/img/favicon.png') }}?v=20261021-2">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}?v=20261021-2">
     <style>
         :root {
             --blue: #1769ed;
@@ -55,7 +58,7 @@
             content: "";
         }
         .brand { position: relative; z-index: 1; display: flex; align-items: center; gap: .8rem; color: #fff; }
-        .brand img { width: 3.35rem; height: 3.35rem; padding: .48rem; border-radius: .9rem; background: #fff; }
+        .brand img { width: 3.35rem; height: 3.35rem; padding: .15rem; border-radius: .9rem; background: #fff; object-fit: contain; }
         .brand strong { display: block; font-size: 1.35rem; letter-spacing: -.04em; }
         .brand span { display: block; margin-top: .15rem; color: #d8e8ff; font-size: .68rem; }
         .intro { position: relative; z-index: 1; max-width: 34rem; margin: auto 0 2rem; }
@@ -108,7 +111,7 @@
     <main class="login-shell">
         <section class="showcase" aria-label="NesiaStore">
             <div class="brand">
-                <img src="{{ asset('assets/img/logo.webp') }}" alt="NesiaStore">
+                <img src="{{ asset('assets/img/nesia-logo.png') }}" alt="NesiaStore">
                 <div><strong>NesiaStore</strong><span>Sistem Kasir Modern & Praktis</span></div>
             </div>
             <div class="intro">

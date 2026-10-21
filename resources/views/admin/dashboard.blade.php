@@ -109,5 +109,40 @@
     @media (max-width: 760px) { .chart-grid, .detail-grid { grid-template-columns: 1fr; }.dashboard-heading { align-items: start; gap: .7rem; }.revenue-chart { height: 11rem; }.payment-summary { flex-wrap: nowrap; }.payment-legend { width: auto; } }
     @media (max-width: 480px) { .dashboard-heading { flex-direction: column; }.metric-card { min-height: 4.2rem; padding: .6rem; }.metric-card strong { font-size: .78rem; }.metric-card span { font-size: .45rem; }.metric-card > i { font-size: 1rem; }.revenue-chart { gap: .25rem; padding-left: .45rem; padding-right: .45rem; }.revenue-value { font-size: .42rem; }.payment-summary { gap: .6rem; }.payment-donut { flex-basis: 6.5rem; height: 6.5rem; width: 6.5rem; }.payment-donut::before { inset: .8rem; }.payment-legend li { font-size: .48rem; } }
     @media (prefers-reduced-motion: reduce) { .revenue-track span { animation: none; } }
+    .store-dashboard { --dash-blue: #3974df; --dash-ink: #26354d; --dash-muted: #7c8ba1; --dash-line: #e8edf4; }
+    .dashboard-heading { margin-bottom: 1.5rem; }
+    .dashboard-heading h1 { color: #1b2b44; font-size: 1.65rem; font-weight: 750; letter-spacing: -.035em; }
+    .dashboard-heading p { color: #8290a4; font-size: .82rem; margin-top: .35rem; }
+    .report-link { border-radius: .65rem; box-shadow: 0 .35rem .8rem rgba(57,116,223,.18); font-size: .76rem; font-weight: 700; padding: .7rem .9rem; }
+    .metric-grid { gap: 1rem; margin-bottom: 1rem; }
+    .metric-card { border: 1px solid var(--dash-line); border-left: 0; border-radius: .85rem; box-shadow: 0 .35rem 1.2rem rgba(35,55,90,.045); min-height: 6rem; padding: 1rem 1.1rem; position: relative; }
+    .metric-card::before { background: var(--metric-color); border-radius: 0 .3rem .3rem 0; content: ""; height: 2.5rem; left: 0; position: absolute; top: 1rem; width: .22rem; }
+    .metric-card span { font-size: .62rem; letter-spacing: .07em; }
+    .metric-card strong { color: #25354e; font-size: 1.18rem; font-weight: 750; margin-top: .4rem; }
+    .metric-card > i { background: color-mix(in srgb, var(--metric-color) 10%, white); border-radius: .75rem; color: var(--metric-color); font-size: 1.25rem; margin-left: .5rem; padding: .7rem; }
+    .chart-grid, .detail-grid { gap: 1rem; margin-bottom: 1rem; }
+    .dashboard-panel { border: 1px solid var(--dash-line); border-radius: .9rem; box-shadow: 0 .35rem 1.2rem rgba(35,55,90,.045); overflow: hidden; }
+    .panel-heading { min-height: 4rem; padding: .85rem 1rem; }
+    .panel-heading h2 { color: #2d3d55; font-size: .84rem; font-weight: 750; }
+    .panel-heading p { color: #8794a7; font-size: .66rem; }
+    .panel-heading > a { font-size: .68rem; font-weight: 700; }
+    .revenue-chart { height: 14rem; padding: 1.15rem 1rem .7rem; }
+    .revenue-value, .revenue-month { font-size: .62rem; }
+    .revenue-track span { border-radius: .35rem .35rem 0 0; }
+    .payment-summary { gap: 1.1rem; min-height: 14rem; }
+    .payment-legend li { font-size: .62rem; gap: .45rem; grid-template-columns: .5rem minmax(4rem,1fr); }
+    .payment-legend li strong { font-size: .58rem; }
+    .admin-table { font-size: .7rem; min-width: 38rem; }
+    .admin-table th { font-size: .58rem; padding: .8rem .85rem; }
+    .admin-table td { padding: .8rem .85rem; }
+    .admin-table td strong { color: #33445d; }
+    .method-badge { font-size: .6rem; padding: .32rem .55rem; }
+    @media (max-width: 600px) {
+        .dashboard-heading h1 { font-size: 1.4rem; }
+        .metric-card { min-height: 5.4rem; padding: .75rem; }
+        .metric-card span { font-size: .53rem; }
+        .metric-card strong { font-size: .95rem; }
+        .metric-card > i { font-size: 1rem; padding: .55rem; }
+    }
 </style>
 @endsection

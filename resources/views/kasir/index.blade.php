@@ -63,7 +63,7 @@
     .quick-payments button { background: #fff; border: 1px solid #bfd5ef; border-radius: .25rem; color: var(--pos-blue); font-size: .65rem; padding: .35rem .5rem; }
     .action-area { display: grid; gap: .5rem; grid-template-columns: 1fr 1fr; margin-top: 1rem; }
     .action-area button { border: 0; border-radius: .3rem; color: #fff; font-size: .72rem; font-weight: 800; padding: .7rem .5rem; }
-    .btn-hold { background: #f2b705; } .btn-cancel { background: #dc3545; } .btn-pay { background: #16834e; grid-column: 1 / -1; }
+    .btn-hold { background: #f2b705; } .btn-cancel { background: #dc3545; } .btn-pay { background: #1769ed; grid-column: 1 / -1; }
     .receipt-status { background: #eaf7ef; border-radius: .3rem; color: #226b44; display: none; font-size: .67rem; line-height: 1.5; margin-top: .65rem; padding: .6rem; }
     .receipt-status.is-visible { display: block; }.receipt-status.is-error { background: #fff3df; color: #865814; }
     .print-receipt { display: none; }
@@ -89,6 +89,31 @@
         #printReceipt, #printReceipt * { visibility: visible !important; }
         #printReceipt { display: block !important; left: 0; margin: 0 auto; max-width: 72mm; position: absolute; top: 0; width: 100%; color: #111; font: 12px/1.4 Arial, sans-serif; }
     }
+    .pos-page { --pos-blue: #1769ed; --pos-ink: #23354c; --pos-muted: #7d8ca2; background: #f5f7fb; margin: -1.75rem -2rem -2.5rem; min-height: calc(100vh - 4.35rem); padding: 1.75rem 2rem 2.5rem; }
+    .pos-header { align-items: center; margin-bottom: 1.3rem; }
+    .pos-header h1 { color: #1b2b44; font-size: 1.55rem; letter-spacing: -.035em; }
+    .pos-header p { color: #7d8ca2; font-size: .8rem; }
+    .transaction-meta { background: #fff; border: 1px solid #e4ece7; border-radius: .8rem; padding: .65rem .85rem; text-align: right; }
+    .transaction-meta strong { color: #25354e; font-size: .95rem; }
+    .pos-grid { gap: 1.15rem; grid-template-columns: minmax(0, 1fr) 23rem; }
+    .pos-card { border: 1px solid #e4eaf2; border-radius: .9rem; box-shadow: 0 .4rem 1.3rem rgba(27,65,100,.055); }
+    .pos-card-title { color: #293b53; font-size: .86rem; padding: 1rem 1.1rem; }
+    .pos-card-body { padding: 1.1rem; }
+    .search-wrap input, .customer-grid input, .customer-grid select, .summary-input, .payment-input { border-color: #dce5e1; border-radius: .55rem; }
+    .product-results { border-color: #dce5ee; border-radius: .6rem; box-shadow: 0 .8rem 1.8rem rgba(27,65,100,.12); }
+    .product-item { padding: .8rem .9rem; }
+    .btn-pos { border-radius: .55rem; font-size: .78rem; }
+    .cart-table th { background: #f6f9f7; color: #63748a; }
+    .cart-table td { border-top-color: #edf1ef; }
+    .total-box { background: #f0f5ff; border-radius: .6rem; padding: 1rem; }
+    .total-value { color: #1769ed; }
+    .payment-box { background: #f4f8ff; border-color: #dce7fa; border-radius: .6rem; }
+    .payment-method button, .quick-payments button { border-radius: .45rem; }
+    .action-area button { border-radius: .5rem; }
+    .change-box { border-radius: .5rem; }
+    @media (max-width: 900px) { .pos-grid { grid-template-columns: 1fr; } }
+    @media (max-width: 767.98px) { .pos-page { margin: -1.1rem -.85rem -1.5rem; padding: 1rem .85rem 1.5rem; } }
+    @media (max-width: 520px) { .pos-page { margin: -.75rem; padding: .75rem; } }
 </style>
 
 <div class="pos-page">
@@ -98,7 +123,31 @@
             <div class="pos-card"><div class="pos-card-title">Tambah Barang</div><div class="pos-card-body"><div class="search-row"><div class="search-wrap"><input id="searchProduct" type="search" placeholder="Cari nama barang / kode / barcode..." autocomplete="off" autofocus><div class="product-results" id="productResults"></div></div><button class="btn-pos" id="searchButton" type="button">Cari</button></div><div class="customer-grid"><div><label class="field-label" for="customerType">Pelanggan</label><select id="customerType"><option>Umum</option><option>Pelanggan Member</option><option>Member VIP</option></select></div><div><label class="field-label" for="customerContact">No. Member / HP</label><input id="customerContact" type="text" placeholder="Opsional"></div></div></div></div>
             <div class="pos-card"><div class="pos-card-title d-flex justify-content-between"><span>Keranjang Belanja</span><span id="itemCount">0 Item</span></div><div class="table-wrap"><table class="cart-table"><thead><tr><th>No</th><th>Barang</th><th>Harga</th><th>Qty</th><th class="text-right">Subtotal</th><th></th></tr></thead><tbody id="cartBody"></tbody></table></div></div>
         </section>
-        <aside class="pos-card"><div class="pos-card-title">Ringkasan Pembayaran</div><div class="pos-card-body"><div class="summary-row"><span>Total Item</span><strong id="totalQty">0</strong></div><div class="summary-row"><span>Subtotal</span><strong id="subtotal">Rp 0</strong></div><div class="summary-row"><span>Diskon (%)</span><input class="summary-input" id="discountPercent" type="number" value="0" min="0" max="100"></div><div class="summary-row"><span>Diskon (Rp)</span><input class="summary-input" id="discountAmount" type="number" value="0" min="0"></div><div class="summary-row"><span>Pajak / PPN</span><input class="summary-input" id="tax" type="number" value="0" min="0"></div><div class="summary-row"><span>Biaya Lain</span><input class="summary-input" id="otherFee" type="number" value="0" min="0"></div><div class="total-box"><div class="total-label">TOTAL AKHIR</div><div class="total-value" id="grandTotal">Rp 0</div></div><div class="payment-box"><label class="payment-label" id="paymentLabel" for="payment">Uang Dibayar</label><input class="payment-input" id="payment" type="number" min="0" placeholder="0"><div class="payment-label mt-3" id="quickPaymentLabel">Nominal Cepat</div><div class="quick-payments" id="quickPayments"></div><div class="payment-label mt-3">Metode Pembayaran</div><div class="payment-method" id="paymentMethod"><button type="button" class="active">Tunai</button><button type="button">QRIS</button><button type="button">Debit</button><button type="button">Kredit</button><button type="button">E-Wallet</button><button type="button">Transfer</button></div><p class="payment-label mt-2" id="paymentHelp" aria-live="polite">Masukkan jumlah uang yang diterima dari pelanggan.</p><div class="change-box" id="changeBox"><div class="change-label" id="changeLabel">KEMBALIAN</div><div class="change-value" id="change">Rp 0</div></div></div><div class="action-area"><button type="button" class="btn-hold" id="holdButton">Tahan</button><button type="button" class="btn-cancel" id="cancelButton">Batal</button><button type="button" class="btn-pay" id="payButton">BAYAR &amp; CETAK</button></div><div id="receiptStatus" class="receipt-status" role="status" aria-live="polite"></div></div></aside>
+        <aside class="pos-card">
+            <div class="pos-card-title">Ringkasan Pembayaran</div>
+            <div class="pos-card-body">
+                <div class="total-box">
+                    <div class="total-label">TOTAL PEMBAYARAN</div>
+                    <div class="total-value" id="grandTotal">Rp 0</div>
+                </div>
+                <div class="payment-box">
+                    <label class="payment-label" id="paymentLabel" for="payment">Uang Dibayar</label>
+                    <input class="payment-input" id="payment" type="number" min="0" placeholder="0">
+                    <div class="payment-label mt-3" id="quickPaymentLabel">Nominal Cepat</div>
+                    <div class="quick-payments" id="quickPayments"></div>
+                    <div class="payment-label mt-3">Metode Pembayaran</div>
+                    <div class="payment-method" id="paymentMethod"><button type="button" class="active">Tunai</button><button type="button">QRIS</button><button type="button">Debit</button></div>
+                    <p class="payment-label mt-2" id="paymentHelp" aria-live="polite">Masukkan jumlah uang yang diterima dari pelanggan.</p>
+                    <div class="change-box" id="changeBox"><div class="change-label" id="changeLabel">KEMBALIAN</div><div class="change-value" id="change">Rp 0</div></div>
+                </div>
+                <div class="action-area">
+                    <button type="button" class="btn-hold" id="holdButton">Tahan</button>
+                    <button type="button" class="btn-cancel" id="cancelButton">Batal</button>
+                    <button type="button" class="btn-pay" id="payButton">BAYAR &amp; CETAK</button>
+                </div>
+                <div id="receiptStatus" class="receipt-status" role="status" aria-live="polite"></div>
+            </div>
+        </aside>
     </main>
 </div>
 <div id="printReceipt" class="print-receipt" aria-live="polite"></div>
@@ -110,34 +159,30 @@ const receiptPrintUrl = @json(route('struk.cetak'));
 let cart = [], selectedPayment = 'Tunai';
 const rupiah = value => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value || 0);
 const $ = id => document.getElementById(id);
-const grandTotal = () => { const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0); const percent = subtotal * (Number($('discountPercent').value) || 0) / 100; return Math.max(0, subtotal - percent - (Number($('discountAmount').value) || 0) + (Number($('tax').value) || 0) + (Number($('otherFee').value) || 0)); };
+const grandTotal = () => cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 function productImage(product) { return product.image ? `<img class="product-image" src="${product.image}" alt="${product.name}">` : '<span class="product-image-placeholder" aria-hidden="true">&#9633;</span>'; }
 function renderResults() { const keyword = $('searchProduct').value.toLowerCase().trim(), box = $('productResults'); if (!keyword) { box.style.display = 'none'; return; } const results = products.filter(product => [product.name, product.code, product.barcode].some(value => value.toLowerCase().includes(keyword))); box.innerHTML = results.length ? results.map(product => `<div class="product-item" data-product-id="${product.id}"><div class="product-info">${productImage(product)}<div><div class="product-name">${product.name}</div><div class="product-code">${product.code} - ${product.barcode} &bull; Stok ${product.stock}</div></div></div><div class="product-price">${rupiah(product.price)}</div></div>`).join('') : '<div class="product-item">Barang tidak ditemukan</div>'; box.style.display = 'block'; }
 function addToCart(id) { const product = products.find(item => item.id === id); if (!product) return; const item = cart.find(row => row.id === id); if (item) { if (item.qty < product.stock) item.qty++; else alert('Jumlah melebihi stok yang tersedia.'); } else cart.push({ ...product, qty: 1 }); $('searchProduct').value = ''; $('productResults').style.display = 'none'; renderCart(); }
 function renderCart() { const body = $('cartBody'); body.innerHTML = cart.length ? cart.map((item, index) => `<tr><td>${index + 1}</td><td><div class="product-info">${productImage(item)}<div><strong>${item.name}</strong><div class="product-code">${item.code}</div></div></div></td><td>${rupiah(item.price)}</td><td><div class="qty-control"><button type="button" data-action="minus" data-id="${item.id}">-</button><input type="number" min="1" max="${item.stock}" value="${item.qty}" data-action="qty" data-id="${item.id}"><button type="button" data-action="plus" data-id="${item.id}">+</button></div></td><td class="text-right"><strong>${rupiah(item.price * item.qty)}</strong></td><td><button type="button" class="remove-btn" data-action="remove" data-id="${item.id}" aria-label="Hapus ${item.name}">&times;</button></td></tr>`).join('') : '<tr><td class="empty-cart" colspan="6">Keranjang masih kosong.<br>Silakan cari atau scan barang.</td></tr>'; calculateTotal(); }
 function isCashPayment() { return selectedPayment === 'Tunai'; }
-function calculateTotal() { const qty = cart.reduce((sum, item) => sum + item.qty, 0); $('totalQty').textContent = qty; $('itemCount').textContent = `${qty} Item`; $('subtotal').textContent = rupiah(cart.reduce((sum, item) => sum + item.price * item.qty, 0)); $('grandTotal').textContent = rupiah(grandTotal()); if (!isCashPayment()) $('payment').value = cart.length ? grandTotal() : ''; calculateChange(); renderQuickPayments(); }
+function calculateTotal() { const qty = cart.reduce((sum, item) => sum + item.qty, 0); $('itemCount').textContent = `${qty} Item`; $('grandTotal').textContent = rupiah(grandTotal()); if (!isCashPayment()) $('payment').value = cart.length ? grandTotal() : ''; calculateChange(); renderQuickPayments(); }
 function calculateChange() { const nonCash = !isCashPayment(); $('changeBox').hidden = nonCash; $('payment').readOnly = nonCash; $('quickPaymentLabel').hidden = nonCash; $('quickPayments').hidden = nonCash; $('paymentLabel').textContent = nonCash ? 'Nominal pembayaran' : 'Uang Dibayar'; $('paymentHelp').textContent = nonCash ? `Terima pembayaran ${selectedPayment} di luar aplikasi dan pastikan berhasil sebelum dikonfirmasi.` : 'Masukkan jumlah uang yang diterima dari pelanggan.'; $('payButton').textContent = nonCash ? 'KONFIRMASI & CETAK' : 'BAYAR & CETAK'; if (nonCash) return; const difference = (Number($('payment').value) || 0) - grandTotal(); $('changeBox').classList.toggle('short-payment', difference < 0); $('changeLabel').textContent = difference < 0 ? 'UANG KURANG' : 'KEMBALIAN'; $('change').textContent = rupiah(Math.abs(difference)); }
 function renderQuickPayments() { const total = grandTotal(), values = total ? [...new Set([Math.ceil(total / 10000) * 10000, Math.ceil(total / 50000) * 50000, Math.ceil(total / 100000) * 100000])] : []; $('quickPayments').innerHTML = values.map(value => `<button type="button" data-payment="${value}">${rupiah(value)}</button>`).join('') + (total ? '<button type="button" data-payment="exact">Uang Pas</button>' : ''); }
 function escapeReceiptText(value) { return String(value).replace(/[&<>"']/g, character => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' })[character]); }
 function renderReceipt() {
     const subtotal = cart.reduce((sum, item) => sum + item.price * item.qty, 0);
-    const percentDiscount = subtotal * (Number($('discountPercent').value) || 0) / 100;
-    const amountDiscount = Number($('discountAmount').value) || 0;
-    const tax = Number($('tax').value) || 0;
-    const otherFee = Number($('otherFee').value) || 0;
     const paid = Number($('payment').value) || 0;
     const total = grandTotal();
     const receiptRows = cart.map(item => `<div class="receipt-item"><div class="receipt-item-name">${escapeReceiptText(item.name)}</div><div class="receipt-item-detail"><span>${item.qty} x ${rupiah(item.price)}</span><strong>${rupiah(item.price * item.qty)}</strong></div></div>`).join('');
     const now = new Date();
-    $('printReceipt').innerHTML = `<header class="receipt-head"><h1>NesiaStore</h1><p>Jl. Transmenia No. 123 - Sabu Raijua</p><p>Telp. 0812-xxxx-xxxx</p></header><div class="receipt-meta"><div><span>No. Transaksi</span><strong>${escapeReceiptText($('transactionNumber').textContent)}</strong></div><div><span>Waktu</span><span>${escapeReceiptText(now.toLocaleString('id-ID'))}</span></div><div><span>Pelanggan</span><span>${escapeReceiptText($('customerType').value)}</span></div></div><div class="receipt-items">${receiptRows}</div><div class="receipt-totals"><div><span>Subtotal</span><span>${rupiah(subtotal)}</span></div>${percentDiscount ? `<div><span>Diskon (${Number($('discountPercent').value)}%)</span><span>-${rupiah(percentDiscount)}</span></div>` : ''}${amountDiscount ? `<div><span>Diskon tambahan</span><span>-${rupiah(amountDiscount)}</span></div>` : ''}${tax ? `<div><span>Pajak / PPN</span><span>${rupiah(tax)}</span></div>` : ''}${otherFee ? `<div><span>Biaya lain</span><span>${rupiah(otherFee)}</span></div>` : ''}<div class="receipt-grand"><span>TOTAL</span><span>${rupiah(total)}</span></div><div><span>${escapeReceiptText(selectedPayment)}</span><span>${rupiah(paid)}</span></div><div><span>Kembalian</span><span>${rupiah(paid - total)}</span></div></div><p class="receipt-thanks">Terima kasih atas kunjungan Anda.</p>`;
+    $('printReceipt').innerHTML = `<header class="receipt-head"><h1>NesiaStore</h1><p>Jl. Transmenia No. 123 - Sabu Raijua</p><p>Telp. 0812-xxxx-xxxx</p></header><div class="receipt-meta"><div><span>No. Transaksi</span><strong>${escapeReceiptText($('transactionNumber').textContent)}</strong></div><div><span>Waktu</span><span>${escapeReceiptText(now.toLocaleString('id-ID'))}</span></div><div><span>Pelanggan</span><span>${escapeReceiptText($('customerType').value)}</span></div></div><div class="receipt-items">${receiptRows}</div><div class="receipt-totals"><div><span>Subtotal</span><span>${rupiah(subtotal)}</span></div><div class="receipt-grand"><span>TOTAL</span><span>${rupiah(total)}</span></div><div><span>${escapeReceiptText(selectedPayment)}</span><span>${rupiah(paid)}</span></div><div><span>Kembalian</span><span>${rupiah(paid - total)}</span></div></div><p class="receipt-thanks">Terima kasih atas kunjungan Anda.</p>`;
 }
-function receiptPayload() { return { transaction_number: $('transactionNumber').textContent, customer: $('customerType').value, payment_method: selectedPayment, discount_percent: Number($('discountPercent').value) || 0, discount_amount: Number($('discountAmount').value) || 0, tax: Number($('tax').value) || 0, other_fee: Number($('otherFee').value) || 0, paid: Number($('payment').value) || 0, items: cart.map(({ id, qty }) => ({ product_id: id, qty })) }; }
+function receiptPayload() { return { transaction_number: $('transactionNumber').textContent, customer: $('customerType').value, payment_method: selectedPayment, paid: Number($('payment').value) || 0, items: cart.map(({ id, qty }) => ({ product_id: id, qty })) }; }
 function setTransactionMeta() { const now = new Date(), suffix = Math.random().toString(36).slice(2, 6).toUpperCase(); $('transactionNumber').textContent = `TRX-${now.toISOString().slice(0, 10).replaceAll('-', '')}-${String(now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()).padStart(6, '0')}-${suffix}`; $('currentDate').textContent = now.toLocaleString('id-ID'); }
-function resetTransaction() { cart = []; $('payment').value = ''; $('printReceipt').innerHTML = ''; ['discountPercent', 'discountAmount', 'tax', 'otherFee'].forEach(id => $(id).value = 0); renderCart(); setTransactionMeta(); }
+function resetTransaction() { cart = []; $('payment').value = ''; $('printReceipt').innerHTML = ''; renderCart(); setTransactionMeta(); }
 $('searchProduct').addEventListener('input', renderResults); $('searchButton').addEventListener('click', renderResults); $('searchProduct').addEventListener('keydown', event => { if (event.key === 'Enter') { const first = $('productResults').querySelector('[data-product-id]'); if (first) addToCart(Number(first.dataset.productId)); } }); $('productResults').addEventListener('click', event => { const item = event.target.closest('[data-product-id]'); if (item) addToCart(Number(item.dataset.productId)); });
 $('cartBody').addEventListener('click', event => { const control = event.target.closest('[data-action]'); if (!control) return; const item = cart.find(row => row.id === Number(control.dataset.id)); if (!item) return; if (control.dataset.action === 'remove') cart = cart.filter(row => row.id !== item.id); if (control.dataset.action === 'minus') item.qty--; if (control.dataset.action === 'plus' && item.qty < item.stock) item.qty++; if (item.qty < 1) cart = cart.filter(row => row.id !== item.id); renderCart(); }); $('cartBody').addEventListener('change', event => { if (event.target.dataset.action !== 'qty') return; const item = cart.find(row => row.id === Number(event.target.dataset.id)); if (item) item.qty = Math.min(item.stock, Math.max(1, Number(event.target.value) || 1)); renderCart(); });
-['discountPercent', 'discountAmount', 'tax', 'otherFee'].forEach(id => $(id).addEventListener('input', calculateTotal)); $('payment').addEventListener('input', calculateChange); $('quickPayments').addEventListener('click', event => { const button = event.target.closest('[data-payment]'); if (!button) return; $('payment').value = button.dataset.payment === 'exact' ? grandTotal() : button.dataset.payment; calculateChange(); }); $('paymentMethod').addEventListener('click', event => { const button = event.target.closest('button'); if (!button) return; selectedPayment = button.textContent; document.querySelectorAll('#paymentMethod button').forEach(item => item.classList.toggle('active', item === button)); calculateTotal(); });
+ $('payment').addEventListener('input', calculateChange); $('quickPayments').addEventListener('click', event => { const button = event.target.closest('[data-payment]'); if (!button) return; $('payment').value = button.dataset.payment === 'exact' ? grandTotal() : button.dataset.payment; calculateChange(); }); $('paymentMethod').addEventListener('click', event => { const button = event.target.closest('button'); if (!button) return; selectedPayment = button.textContent; document.querySelectorAll('#paymentMethod button').forEach(item => item.classList.toggle('active', item === button)); calculateTotal(); });
 $('holdButton').addEventListener('click', () => alert(cart.length ? `Transaksi ${$('transactionNumber').textContent} ditahan.` : 'Tidak ada transaksi untuk ditahan.'));
 $('cancelButton').addEventListener('click', () => { if (cart.length && confirm('Batalkan transaksi ini?')) resetTransaction(); });
 $('payButton').addEventListener('click', () => {

@@ -9,6 +9,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
     <title>@yield('title', 'NesiaStore')</title>
+    <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
+    <link rel="icon" type="image/png" sizes="128x128" href="{{ asset('assets/img/favicon.png') }}?v=20261021-2">
+    <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}?v=20261021-2">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -21,9 +24,9 @@
             --admin-deep: #0c1f39;
             --admin-accent: #3e8cff;
             --admin-soft: #edf4ff;
-            --cashier-deep: #0d3b2e;
-            --cashier-accent: #20b06b;
-            --cashier-soft: #eafff5;
+            --cashier-deep: #102855;
+            --cashier-accent: #3478e5;
+            --cashier-soft: #edf4ff;
         }
 
         * { box-sizing: border-box; }
@@ -33,7 +36,7 @@
             font-family: "Segoe UI", sans-serif;
         }
         body.admin-body { background: linear-gradient(180deg, #f3f7ff 0%, #edf4ff 100%); }
-        body.cashier-body { background: linear-gradient(180deg, #f4fff9 0%, #edfdf5 100%); }
+        body.cashier-body { background: linear-gradient(180deg, #f5f8ff 0%, #edf3ff 100%); }
         .admin-shell { min-height: 100vh; }
         .sidebar {
             min-height: 100vh;
@@ -45,7 +48,7 @@
             background: linear-gradient(165deg, var(--admin-deep) 0%, #1a2d4d 100%);
         }
         body.cashier-body .sidebar {
-            background: linear-gradient(165deg, var(--cashier-deep) 0%, #12523c 100%);
+            background: linear-gradient(165deg, var(--cashier-deep) 0%, #1b4688 100%);
         }
         .sidebar::after {
             border-radius: 50%;
@@ -58,7 +61,7 @@
             opacity: .18;
         }
         body.admin-body .sidebar::after { background: rgba(62, 140, 255, .25); }
-        body.cashier-body .sidebar::after { background: rgba(32, 176, 107, .25); }
+        body.cashier-body .sidebar::after { background: rgba(75, 139, 245, .25); }
         .sidebar-brand { align-items: center; color: #fff; display: flex; font-size: 1.25rem; font-weight: 800; gap: .65rem; letter-spacing: -.04em; position: relative; z-index: 1; }
         .sidebar-brand-mark {
             align-items: center;
@@ -67,10 +70,11 @@
             display: flex;
             height: 2.35rem;
             justify-content: center;
+            object-fit: cover;
             width: 2.35rem;
         }
         body.admin-body .sidebar-brand-mark { background: linear-gradient(135deg, #4d9bff, #2b5ed8); }
-        body.cashier-body .sidebar-brand-mark { background: linear-gradient(135deg, #33d27c, #1fa866); }
+        body.cashier-body .sidebar-brand-mark { background: linear-gradient(135deg, #63a0ff, #3478e5); }
         .role-pill {
             border-radius: 999px;
             display: inline-flex;
@@ -83,7 +87,7 @@
             z-index: 1;
         }
         body.admin-body .role-pill { background: rgba(98, 163, 255, .18); border: 1px solid rgba(152, 199, 255, .25); color: #dfeeff; }
-        body.cashier-body .role-pill { background: rgba(99, 234, 158, .18); border: 1px solid rgba(152, 240, 195, .25); color: #eaffe9; }
+        body.cashier-body .role-pill { background: rgba(99, 160, 255, .18); border: 1px solid rgba(152, 190, 255, .25); color: #edf4ff; }
         .sidebar-top { align-items: center; display: flex; gap: .75rem; position: relative; z-index: 1; }
         .sidebar-caption {
             color: rgba(255, 255, 255, .72);
@@ -107,12 +111,12 @@
         }
         .sidebar .nav-link:hover { background: rgba(255, 255, 255, .08); color: #fff; transform: translateX(3px); }
         body.admin-body .sidebar .nav-link.active { background: linear-gradient(100deg, #367ff0, #2d62c7); box-shadow: 0 .55rem 1.1rem rgba(17, 55, 125, .28); color: #fff; }
-        body.cashier-body .sidebar .nav-link.active { background: linear-gradient(100deg, #2fcb7d, #1ca864); box-shadow: 0 .55rem 1.1rem rgba(17, 118, 75, .25); color: #fff; }
+        body.cashier-body .sidebar .nav-link.active { background: linear-gradient(100deg, #4389f5, #2864cc); box-shadow: 0 .55rem 1.1rem rgba(24, 73, 153, .25); color: #fff; }
         .sidebar .nav-link i { font-size: 1rem; width: 1.1rem; }
         .sidebar hr { border-color: rgba(255, 255, 255, .1); margin: 1.5rem 0; position: relative; z-index: 1; }
         .sidebar form { position: relative; z-index: 1; }
         body.admin-body .sidebar .btn-danger { background: rgba(242, 91, 91, .15); border: 1px solid rgba(255, 137, 137, .22); color: #ffc3c3; font-size: .75rem; padding: .65rem; }
-        body.cashier-body .sidebar .btn-danger { background: rgba(255, 255, 255, .12); border: 1px solid rgba(255,255,255,.2); color: #ebfff3; font-size: .75rem; padding: .65rem; }
+        body.cashier-body .sidebar .btn-danger { background: rgba(255, 255, 255, .12); border: 1px solid rgba(255,255,255,.2); color: #edf4ff; font-size: .75rem; padding: .65rem; }
         .admin-main { animation: page-in .55s ease both; }
         .admin-main > * { animation: rise-in .55s ease both; }
         .card, .alert { border-color: var(--line) !important; border-radius: .75rem !important; }
@@ -156,6 +160,52 @@
             .admin-topbar { min-height: 3.5rem; padding: .55rem .85rem; }
             .admin-main { padding: 1rem .8rem 1.5rem !important; }
         }
+        body.admin-body, body.cashier-body { background: #f5f7fb; color: #17243a; }
+        .admin-frame { grid-template-columns: 15.5rem minmax(0, 1fr); }
+        .admin-sidebar { background: #111c32 !important; border-right: 1px solid rgba(255,255,255,.06); padding: 1.35rem 1rem !important; }
+        body.cashier-body .admin-sidebar { background: linear-gradient(165deg, #102855 0%, #1b4688 100%) !important; }
+        .admin-sidebar .sidebar-top { gap: .65rem; }
+        .admin-sidebar .sidebar-brand { font-size: 1.03rem; letter-spacing: -.025em; }
+        .admin-sidebar .sidebar-brand-mark { background: #fff !important; border: 1px solid rgba(255,255,255,.3); border-radius: .7rem; height: 2.35rem; object-fit: contain; padding: .12rem; width: 2.35rem; }
+        .admin-sidebar .role-pill { font-size: .58rem; letter-spacing: .07em; padding: .3rem .48rem; }
+        .admin-sidebar .sidebar-caption { color: rgba(231,239,255,.54); font-size: .62rem; letter-spacing: .11em; margin: 1.55rem .65rem .65rem; }
+        .admin-sidebar .nav { gap: .3rem; }
+        .admin-sidebar .nav-link { border: 1px solid transparent; border-radius: .7rem; color: rgba(239,244,255,.68); font-size: .81rem; gap: .75rem; min-height: 2.8rem; padding: .7rem .8rem; }
+        .admin-sidebar .nav-link i { color: rgba(219,231,255,.72); font-size: 1.05rem; }
+        .admin-sidebar .nav-link:hover { background: rgba(255,255,255,.07); color: #fff; transform: translateX(2px); }
+        body.admin-body .admin-sidebar .nav-link.active { background: rgba(78,139,255,.17); border-color: rgba(111,162,255,.2); box-shadow: none; color: #fff; }
+        body.admin-body .admin-sidebar .nav-link.active i { color: #85b3ff; }
+        body.cashier-body .admin-sidebar .nav-link.active { background: rgba(78,139,255,.17); border-color: rgba(111,162,255,.2); box-shadow: none; color: #fff; }
+        body.cashier-body .admin-sidebar .nav-link.active i { color: #85b3ff; }
+        .admin-sidebar hr { border-color: rgba(255,255,255,.1); margin: 1.25rem 0; }
+        .admin-sidebar .btn-danger { border-radius: .65rem; font-size: .78rem; padding: .7rem !important; }
+        .admin-workspace { min-height: 100vh; }
+        .admin-topbar { background: rgba(255,255,255,.94); border-bottom-color: #e9edf4; min-height: 4.35rem; padding: .65rem 2rem; position: sticky; top: 0; z-index: 20; }
+        .topbar-heading { color: #293851; font-size: .9rem; font-weight: 700; }
+        .topbar-account { color: #8290a5; font-size: .75rem; gap: 1rem; }
+        .topbar-account > span:first-child { background: #f3f6fa; border: 1px solid #e9edf4; border-radius: 2rem; color: #66758c; padding: .45rem .7rem; }
+        .topbar-account a { color: #33445e; font-weight: 600; gap: .55rem; }
+        .topbar-avatar { background: #e9f0ff; color: #356dd4; font-size: .72rem; height: 2.2rem; width: 2.2rem; }
+        body.cashier-body .topbar-avatar { background: #e9f0ff; color: #356dd4; }
+        .admin-main { margin: 0 auto; max-width: 1800px; padding: 1.75rem 2rem 2.5rem !important; width: 100%; }
+        .card, .alert { border-radius: .9rem !important; }
+        .card { box-shadow: 0 .5rem 1.7rem rgba(29,55,94,.055) !important; }
+        .btn { border-radius: .6rem; }
+        .table { --bs-table-bg: transparent; }
+        .table thead th { background: #f7f9fc; border-bottom-color: #e8edf4; color: #68778d; font-size: .72rem; font-weight: 700; letter-spacing: .025em; padding: .85rem .8rem; white-space: nowrap; }
+        .table tbody td { border-bottom-color: #edf0f5; color: #46556c; padding: .85rem .8rem; }
+        .table tbody tr:last-child td { border-bottom: 0; }
+        @media (max-width: 767.98px) {
+            .admin-frame { grid-template-columns: 1fr; }
+            .admin-sidebar { padding: .8rem !important; }
+            .admin-sidebar .nav { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+            .admin-sidebar .nav-link { border-radius: .6rem; }
+            .admin-sidebar .nav-link.active { box-shadow: none !important; }
+            .admin-main { padding: 1.1rem .85rem 1.5rem !important; }
+            .admin-topbar { padding: .55rem .9rem; }
+            .topbar-account { gap: .45rem; }
+            .topbar-account > span:first-child { display: none; }
+        }
     </style>
 </head>
 <body class="{{ $isAdmin ? 'admin-body' : 'cashier-body' }}">
@@ -163,7 +213,7 @@
         <aside class="admin-sidebar sidebar">
             <div class="sidebar-top">
                 <a href="{{ route('dashboard') }}" class="sidebar-brand text-decoration-none">
-                    <span class="sidebar-brand-mark"><i class="bi {{ $isAdmin ? 'bi-grid-1x2-fill' : 'bi-cash-stack' }}"></i></span>
+                    <img src="{{ asset('assets/img/nesia-logo.png') }}" alt="" class="sidebar-brand-mark">
                     <span>NesiaStore</span>
                 </a>
                 <span class="role-pill">{{ $isAdmin ? 'ADMIN' : 'KASIR' }}</span>
@@ -181,7 +231,13 @@
                     <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
                         <i class="bi bi-clock-history"></i><span>Riwayat</span>
                     </a>
+                    <a href="{{ route('admin.cashiers.index') }}" class="nav-link {{ request()->routeIs('admin.cashiers.*') ? 'active' : '' }}">
+                        <i class="bi bi-people"></i><span>Kasir</span>
+                    </a>
                 @else
+                    <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
+                        <i class="bi bi-box-seam"></i><span>Produk</span>
+                    </a>
                     <a href="{{ route('kasir.index') }}" class="nav-link {{ request()->routeIs('kasir.*') ? 'active' : '' }}">
                         <i class="bi bi-cart3"></i><span>Kasir</span>
                     </a>

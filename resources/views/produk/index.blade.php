@@ -7,9 +7,11 @@
             <h1 class="h3 mb-1">Products</h1> 
             <p class="text-muted mb-0"> Daftar produk </p> 
         </div> 
-        <a href="{{ route('products.create') }}" class="btn btn-primary"> 
-            <i class="bi bi-plus"></i> Tambah Product 
-        </a> 
+        @if (auth()->user()->role === 'admin')
+            <a href="{{ route('products.create') }}" class="btn btn-primary">
+                <i class="bi bi-plus"></i> Tambah Product
+            </a>
+        @endif
     </div> 
 
     {{-- Alert Success --}} 
@@ -36,7 +38,7 @@
                             <th>Harga</th> 
                             <th>Stock</th> 
                             <th>Status</th> 
-                            <th width="180">Aksi</th> 
+                            <th width="{{ auth()->user()->role === 'admin' ? 180 : 90 }}">Aksi</th>
                         </tr> 
                     </thead> 
                     <tbody> 
@@ -70,29 +72,28 @@
                                     @endif 
                                 </td> 
                                 <td> 
-                                    <div class="d-flex gap-1"> 
-                                        {{-- Detail --}} 
-                                        <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-info text-white"> 
-                                            Detail 
-                                        </a> 
-                                        {{-- Edit --}} 
-                                        <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-warning"> 
-                                            Edit 
-                                        </a> 
-                                        {{-- Delete --}} 
-                                        <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus product ini?')"> 
-                                            @csrf 
-                                            @method('DELETE') 
-                                            <button type="submit" class="btn btn-sm btn-danger"> 
-                                                Hapus 
-                                            </button> 
-                                        </form> 
+                                    <div class="d-flex gap-1">
+                                        <a href="{{ route('products.show', $product) }}" class="btn btn-sm btn-info text-white">
+                                            Detail
+                                        </a>
+                                        @if (auth()->user()->role === 'admin')
+                                            <a href="{{ route('products.edit', $product) }}" class="btn btn-sm btn-warning">
+                                                Edit
+                                            </a>
+                                            <form action="{{ route('products.destroy', $product) }}" method="POST" onsubmit="return confirm('Yakin ingin menghapus product ini?')">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="btn btn-sm btn-danger">
+                                                    Hapus
+                                                </button>
+                                            </form>
+                                        @endif
                                     </div> 
                                 </td> 
                             </tr> 
                         @empty 
                             <tr> 
-                                <td colspan="8" class="text-center py-4">Belum ada data product.</td> 
+                                <td colspan="8" class="text-center py-4">Belum ada data product.</td>
                             </tr> 
                         @endforelse 
                     </tbody> 

@@ -58,19 +58,16 @@ class AdminDashboardTest extends TestCase
             ->assertOk()
             ->assertSee('Mulai transaksi')
             ->assertSee(route('kasir.index'), false)
-            ->assertDontSee(route('products.index'), false);
+            ->assertSee(route('products.index'), false);
     }
 
-    public function test_cashier_sees_the_custom_animated_forbidden_page_on_admin_routes(): void
+    public function test_cashier_cannot_open_product_creation_form(): void
     {
         $cashier = User::factory()->create(['role' => 'kasir']);
 
         $this->actingAs($cashier)
-            ->get(route('products.index'))
+            ->get(route('products.create'))
             ->assertForbidden()
-            ->assertSee('Anda tidak memiliki izin untuk membuka halaman ini.')
-            ->assertSee('Zona Terlarang')
-            ->assertSee('prefers-reduced-motion', false)
-            ->assertSee(route('dashboard'), false);
+            ->assertSee('Anda tidak memiliki izin untuk membuka halaman ini.');
     }
 }

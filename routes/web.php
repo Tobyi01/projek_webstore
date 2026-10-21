@@ -6,6 +6,7 @@ use App\Http\Controllers\ProductController;
 use App\Http\Controllers\StrukController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\TransactionHistoryController;
+use App\Http\Controllers\Admin\CashierController;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
@@ -69,9 +70,17 @@ $adminDashboard = function () {
 };
 
 Route::middleware(['auth', 'admin'])->group(function () use ($adminDashboard) {
-    Route::resource('products', ProductController::class);
+    Route::resource('products', ProductController::class)->except(['index', 'show']);
 
     Route::get('/admin', $adminDashboard)->name('admin.dashboard');
+    Route::get('/admin/kasir', [CashierController::class, 'index'])->name('admin.cashiers.index');
+    Route::patch('/admin/kasir/{user}/status', [CashierController::class, 'toggleStatus'])->name('admin.cashiers.status');
+    Route::delete('/admin/kasir/{user}', [CashierController::class, 'destroy'])->name('admin.cashiers.destroy');
+});
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/products', [ProductController::class, 'index'])->name('products.index');
+    Route::get('/products/{product}', [ProductController::class, 'show'])->name('products.show');
 });
 
 Route::get('/kasir', [KasirController::class, 'index'])
