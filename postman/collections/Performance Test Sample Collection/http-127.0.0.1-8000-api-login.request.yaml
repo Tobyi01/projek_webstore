@@ -1,0 +1,22 @@
+$kind: http-request
+name: http://127.0.0.1:8000/api/login
+description: ""
+url: http://127.0.0.1:8000/api/login?email=andi@gmail.com&password=andi12345
+method: POST
+queryParams:
+  - key: email
+    value: andi@gmail.com
+    disabled: false
+    description: ""
+  - key: password
+    value: andi12345
+    disabled: false
+    description: ""
+body:
+  type: urlencoded
+  content:
+    email: andi@gmail.com
+    password: andi12345
+auth:
+  type: apikey
+order: 1000

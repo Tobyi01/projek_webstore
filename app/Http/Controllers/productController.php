@@ -4,9 +4,14 @@ namespace App\Http\Controllers;
 
 use App\Models\Product;
 use Illuminate\Http\Request;
+use Illuminate\Http\UploadedFile;
 use Illuminate\Support\Facades\Storage;
+use Illuminate\Support\Str;
+use Intervention\Image\Drivers\Gd\Driver;
+use Intervention\Image\ImageManager;
+use RuntimeException;
 
-class productController extends Controller
+class ProductController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -34,7 +39,7 @@ class productController extends Controller
         $data = $this->validatedData($request);
 
         if ($request->hasFile('image')) {
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $data['image'] = $this->processAndStoreImage($request->file('image'));
         }
 
         Product::create($data);
@@ -69,16 +74,17 @@ class productController extends Controller
     {
         $product = Product::findOrFail($id);
         $data = $this->validatedData($request);
+        $previousImage = $product->image;
 
         if ($request->hasFile('image')) {
-            if ($product->image) {
-                Storage::disk('public')->delete($product->image);
-            }
-
-            $data['image'] = $request->file('image')->store('products', 'public');
+            $data['image'] = $this->processAndStoreImage($request->file('image'));
         }
 
         $product->update($data);
+
+        if ($request->hasFile('image') && $previousImage) {
+            Storage::disk('public')->delete($previousImage);
+        }
 
         return redirect()->route('products.index')->with('success', 'Produk berhasil diperbarui.');
     }
@@ -112,5 +118,20 @@ class productController extends Controller
         ]) + [
             'is_active' => $request->boolean('is_active'),
         ];
+    }
+
+    private function processAndStoreImage(UploadedFile $file): string
+    {
+        $encoded = (new ImageManager(Driver::class))
+            ->read($file->getRealPath())
+            ->cover(800, 800)
+            ->toWebp(quality: 85);
+        $path = 'products/'.now()->format('Y/m').'/'.Str::uuid().'.webp';
+
+        if (! Storage::disk('public')->put($path, $encoded->toString())) {
+            throw new RuntimeException('Gagal menyimpan gambar produk yang telah diproses.');
+        }
+
+        return $path;
     }
 }

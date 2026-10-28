@@ -2,9 +2,11 @@
 
 namespace App\Http\Controllers;
 
+use App\Events\OrderPlaced;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\ReceiptPrinter;
+use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
@@ -13,6 +15,14 @@ use Illuminate\Validation\ValidationException;
 
 class StrukController extends Controller
 {
+    public function invoice(Sale $order)
+    {
+        $invoice = $order->load('items');
+
+        return Pdf::loadView('invoices.invoice', compact('invoice'))
+            ->download('invoice_'.$invoice->transaction_number.'.pdf');
+    }
+
     public function cetak(Request $request, ReceiptPrinter $receiptPrinter): JsonResponse
     {
         $data = $request->validate([
@@ -46,9 +56,9 @@ class StrukController extends Controller
             foreach ($quantities as $productId => $quantity) {
                 $product = $products->get((int) $productId);
 
-                if (!$product || !$product->is_active || $product->stock < $quantity) {
+                if (! $product || ! $product->is_active || $product->stock < $quantity) {
                     throw ValidationException::withMessages([
-                        'items' => 'Produk tidak aktif atau stok tidak mencukupi: ' . ($product?->name ?? 'produk tidak ditemukan'),
+                        'items' => 'Produk tidak aktif atau stok tidak mencukupi: '.($product?->name ?? 'produk tidak ditemukan'),
                     ]);
                 }
 
@@ -111,6 +121,8 @@ class StrukController extends Controller
 
             return $sale->load('items');
         });
+
+        event(new OrderPlaced($sale, $request->user()));
 
         try {
             $receiptPrinter->print($sale);

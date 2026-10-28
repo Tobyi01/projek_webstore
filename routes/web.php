@@ -1,16 +1,16 @@
 <?php
 
-use App\Http\Controllers\ProfileController;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\ProductController;
-use App\Http\Controllers\StrukController;
-use App\Http\Controllers\KasirController;
-use App\Http\Controllers\TransactionHistoryController;
 use App\Http\Controllers\Admin\CashierController;
+use App\Http\Controllers\KasirController;
+use App\Http\Controllers\ProductController;
+use App\Http\Controllers\ProfileController;
+use App\Http\Controllers\StrukController;
+use App\Http\Controllers\TransactionHistoryController;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Models\SaleItem;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Route;
 
 $adminDashboard = function () {
     $now = now();
@@ -89,6 +89,12 @@ Route::get('/kasir', [KasirController::class, 'index'])
 Route::get('/transaksi', [TransactionHistoryController::class, 'index'])
     ->middleware(['auth', 'verified', 'admin'])
     ->name('transactions.index');
+Route::get('/transaksi/{order}/invoice', [StrukController::class, 'invoice'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('sales.invoice');
+Route::get('/orders/{order}/invoice', [StrukController::class, 'invoice'])
+    ->middleware(['auth', 'verified', 'admin'])
+    ->name('orders.invoice');
 Route::get('/', function () {
     return view('welcome');
 });
