@@ -35,11 +35,16 @@ class TransactionHistoryController extends Controller
             default => $reference->copy()->endOfDay(),
         };
 
-        $sales = Sale::query()
+        $salesQuery = Sale::query()
             ->with('items')
             ->whereBetween('sold_at', [$start, $end])
-            ->orderByDesc('sold_at')
-            ->get();
+            ->orderByDesc('sold_at');
+
+        if ($request->user()->role === 'kasir') {
+            $salesQuery->where('user_id', $request->user()->id);
+        }
+
+        $sales = $salesQuery->get();
 
         $groups = $sales
             ->groupBy(fn (Sale $sale): string => $period === 'year'

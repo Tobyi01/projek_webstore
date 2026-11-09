@@ -116,7 +116,7 @@ class ProductController extends Controller
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]) + [
-            'is_active' => $request->boolean('is_active'),
+            'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
         ];
     }
 

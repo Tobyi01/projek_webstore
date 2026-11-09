@@ -27,6 +27,7 @@
     .group-heading { align-items: center; background: #f8faff; border-bottom: 1px solid var(--history-line); display: flex; justify-content: space-between; padding: .75rem .9rem; }
     .group-heading strong { color: #244366; font-size: .72rem; }.group-heading span { color: #7386a1; font-size: .62rem; }.group-total { color: #1769bd !important; font-size: .72rem !important; font-weight: 800; }
     .sale-entry { border-bottom: 1px solid #edf1f6; padding: .8rem .9rem; }.sale-entry:last-child { border-bottom: 0; }
+    .stock-conflict { background: #fff3f1; border: 1px solid #f4c7c2; border-radius: .4rem; color: #983d35; font-size: .62rem; margin-top: .6rem; padding: .6rem .7rem; }
     .sale-summary { align-items: center; display: grid; gap: .7rem; grid-template-columns: minmax(7rem, .8fr) minmax(10rem, 1.5fr) minmax(6rem, .8fr) auto; }
     .sale-time { color: #60758f; font-size: .63rem; white-space: nowrap; }.sale-identity strong, .sale-identity small { display: block; }.sale-identity strong { color: #22436c; font-size: .68rem; }.sale-identity small { color: #8191a8; font-size: .58rem; margin-top: .15rem; }
     .payment-badge { background: #edf4ff; border-radius: 2rem; color: #356cae; display: inline-block; font-size: .57rem; font-weight: 700; padding: .35rem .55rem; white-space: nowrap; }.sale-total { color: #193c69; font-size: .72rem; font-weight: 800; text-align: right; white-space: nowrap; }
@@ -40,7 +41,7 @@
 
 <div class="history-page">
     <header class="history-hero">
-        <div><span class="history-kicker">CATATAN PENJUALAN</span><h1>Riwayat transaksi</h1><p>Telusuri transaksi berdasarkan hari, bulan, atau tahun.</p></div>
+        <div><span class="history-kicker">CATATAN PENJUALAN</span><h1>Riwayat transaksi</h1><p>{{ Auth::user()->role === 'admin' ? 'Telusuri transaksi berdasarkan hari, bulan, atau tahun.' : 'Telusuri transaksi yang Anda proses berdasarkan hari, bulan, atau tahun.' }}</p></div>
         <form class="period-form" method="GET" action="{{ route('transactions.index') }}">
             <input type="hidden" name="period" value="{{ $period }}">
             @if ($period === 'day')
@@ -77,10 +78,18 @@
                         <article class="sale-entry">
                             <div class="sale-summary">
                                 <time class="sale-time" datetime="{{ $sale->sold_at->toIso8601String() }}">{{ $sale->sold_at->format('H:i') }} · {{ $sale->transaction_number }}</time>
-                                <div class="sale-identity"><strong>{{ $sale->customer }}</strong><small>{{ number_format($sale->items->sum('quantity'), 0, ',', '.') }} barang</small></div>
+                                <div class="sale-identity"><strong>{{ $sale->customer }}</strong><small>{{ number_format($sale->items->sum('quantity'), 0, ',', '.') }} barang@if ($sale->is_offline) · transaksi offline disinkronkan @endif</small></div>
                                 <span class="payment-badge">{{ $sale->payment_method }}</span>
                                 <strong class="sale-total">Rp {{ number_format($sale->total, 0, ',', '.') }}</strong>
                             </div>
+                            @if ($sale->stock_conflicts)
+                                <div class="stock-conflict" role="status">
+                                    <strong>Perlu pemeriksaan stok:</strong>
+                                    @foreach ($sale->stock_conflicts as $conflict)
+                                        {{ $conflict['product_name'] }} (terjual {{ $conflict['sold_quantity'] }}, stok server {{ $conflict['available_stock'] }}: {{ $conflict['reason'] }})@if (!$loop->last); @endif
+                                    @endforeach
+                                </div>
+                            @endif
                             <details class="sale-details">
                                 <summary>Lihat rincian barang</summary>
                                 <table class="items-table"><thead><tr><th>Barang</th><th>Qty</th><th>Harga</th><th>Jumlah</th></tr></thead><tbody>

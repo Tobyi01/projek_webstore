@@ -1,0 +1,76 @@
+<!doctype html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="theme-color" content="#1769ed">
+    <title>Kasir Offline - NesiaStore</title>
+    <link rel="manifest" href="/manifest.json">
+    <link rel="icon" href="/assets/img/favicon.png">
+    <style>
+        * { box-sizing: border-box; }
+        body { background: #f4f7fb; color: #17243a; font: 15px "Segoe UI", sans-serif; margin: 0; }
+        main { margin: 0 auto; max-width: 760px; padding: 1.25rem; }
+        header, section { background: #fff; border: 1px solid #e3e9f2; border-radius: .7rem; margin-bottom: 1rem; padding: 1rem; }
+        header { align-items: center; display: flex; justify-content: space-between; gap: .75rem; }
+        h1 { font-size: 1.2rem; margin: 0; }
+        h2 { font-size: 1rem; margin: 0 0 .75rem; }
+        p { color: #66758c; font-size: .85rem; line-height: 1.5; }
+        .status { color: #a3660d; font-size: .75rem; font-weight: 700; }
+        input, select, button { border: 1px solid #d6dfeb; border-radius: .4rem; font: inherit; min-height: 2.5rem; padding: .5rem .65rem; }
+        input, select { width: 100%; }
+        button { background: #1769ed; border: 0; color: white; cursor: pointer; font-weight: 700; }
+        button:disabled { cursor: not-allowed; opacity: .5; }
+        .row { display: flex; gap: .5rem; margin: .5rem 0; }
+        .row > * { flex: 1; }
+        .product { align-items: center; border: 1px solid #e8edf4; border-radius: .4rem; display: flex; justify-content: space-between; margin-top: .5rem; padding: .65rem; }
+        .product small { color: #66758c; display: block; margin-top: .2rem; }
+        .product.low { background: #fff8df; }
+        .cart-item { align-items: center; border-bottom: 1px solid #edf1f6; display: flex; justify-content: space-between; gap: .4rem; padding: .55rem 0; }
+        .cart-item button { min-height: 2rem; padding: .2rem .55rem; }
+        .total { font-size: 1.2rem; font-weight: 800; margin: .8rem 0; }
+        .notice { background: #fff4d6; border-radius: .4rem; color: #79550e; font-size: .8rem; padding: .7rem; }
+        [hidden] { display: none !important; }
+        #receipt { display: none; }
+        @media print { body > main > *:not(#receipt) { display: none !important; } #receipt { border: 0; display: block !important; } body { background: white; } }
+    </style>
+</head>
+<body>
+<main>
+    <header>
+        <div><h1>NesiaStore · Kasir Offline</h1><small id="cashierName">Memeriksa sesi perangkat…</small></div>
+        <div id="connectionStatus" class="status">Offline</div>
+    </header>
+    <div id="message" class="notice" role="status">Mode offline aktif. Produk dan stok menggunakan salinan terakhir saat perangkat online.</div>
+    <section id="catalogPanel">
+        <h2>Cari produk</h2>
+        <input id="search" type="search" placeholder="Nama atau kode produk">
+        <div id="products"></div>
+    </section>
+    <section>
+        <h2>Keranjang</h2>
+        <div id="cart"></div>
+        <div id="total" class="total">Total Rp 0</div>
+    </section>
+    <section id="paymentPanel">
+        <h2>Pembayaran</h2>
+        <label for="customer">Pelanggan</label>
+        <select id="customer"><option>Umum</option><option>Pelanggan Member</option><option>Member VIP</option></select>
+        <div class="row">
+            <label for="method">Metode<select id="method"><option>Tunai</option><option>QRIS</option><option>Debit</option><option>Kredit</option><option>E-Wallet</option><option>Transfer</option></select></label>
+            <label for="paid">Dibayar<input id="paid" type="number" min="0" inputmode="decimal"></label>
+        </div>
+        <p>Untuk pembayaran non-tunai, kasir bertanggung jawab memastikan pembayaran sudah diterima secara manual sebelum menyimpan transaksi.</p>
+        <button id="saveButton" type="button">Simpan transaksi di perangkat</button>
+    </section>
+    <section>
+        <h2>Sinkronisasi</h2>
+        <div id="queueStatus">Memuat antrean…</div>
+        <button id="syncButton" type="button">Sinkronkan sekarang</button>
+    </section>
+    <section id="receipt" aria-live="polite"></section>
+</main>
+<script src="/js/offline-store.js"></script>
+<script src="/js/offline-pos.js"></script>
+</body>
+</html>

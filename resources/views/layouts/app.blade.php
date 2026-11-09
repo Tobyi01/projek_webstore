@@ -4,6 +4,8 @@
         <meta charset="utf-8">
         <meta name="viewport" content="width=device-width, initial-scale=1">
         <meta name="csrf-token" content="{{ csrf_token() }}">
+        <meta name="theme-color" content="#1769ed">
+        <link rel="manifest" href="{{ asset('manifest.json') }}">
 
         <title>{{ config('app.name', 'Laravel') }}</title>
         <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
@@ -17,7 +19,9 @@
 
         <!-- Scripts -->
         @vite(['resources/css/app.css', 'resources/js/app.js'])
-        <script src="{{ asset('js/password-toggle.js') }}" defer></script>
+        <script src="{{ asset('js/password-toggle.js') }}?v=20261109-2" defer></script>
+        <script src="{{ asset('js/offline-store.js') }}?v=20261109-1" defer></script>
+        <script src="{{ asset('js/pwa.js') }}?v=20261109-1" defer></script>
     </head>
     <body class="font-sans antialiased">
         <div class="min-h-screen bg-gray-100 dark:bg-gray-900">

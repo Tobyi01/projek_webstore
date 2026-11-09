@@ -3,7 +3,9 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1769ed">
     <title>Masuk - NesiaStore</title>
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
     <link rel="icon" type="image/png" sizes="128x128" href="{{ asset('assets/img/favicon.png') }}?v=20261021-2">
     <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}?v=20261021-2">
@@ -89,7 +91,7 @@
         .input-wrap input[type="password"], .input-wrap input[type="text"] { padding-right: 6.5rem; }
         .input-wrap input:focus { border-color: var(--blue); box-shadow: 0 0 0 3px rgba(23, 105, 237, .12); }
         .password-toggle { position: absolute; top: 50%; right: .75rem; display: grid; width: 2rem; height: 2rem; padding: .35rem; place-items: center; border: 0; color: #536684; background: transparent; cursor: pointer; transform: translateY(-50%); }
-        .password-toggle svg { width: 1.1rem; height: 1.1rem; }
+        .password-toggle svg { width: 1.25rem; height: 1.25rem; }
         .password-toggle:focus-visible { border-radius: .25rem; outline: 2px solid var(--blue); outline-offset: 2px; }
         .form-options { display: flex; align-items: center; justify-content: space-between; margin: -.25rem 0 1.25rem; color: #62718c; font-size: .7rem; }
         .remember { display: flex; align-items: center; gap: .4rem; }
@@ -158,6 +160,8 @@
             </div>
         </section>
     </main>
-    <script src="{{ asset('js/password-toggle.js') }}" defer></script>
+    <script src="{{ asset('js/password-toggle.js') }}?v=20261109-2" defer></script>
+    <script src="{{ asset('js/offline-store.js') }}?v=20261109-1" defer></script>
+    <script src="{{ asset('js/pwa.js') }}?v=20261109-1" defer></script>
 </body>
 </html>

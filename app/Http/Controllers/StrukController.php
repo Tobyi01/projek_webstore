@@ -15,8 +15,13 @@ use Illuminate\Validation\ValidationException;
 
 class StrukController extends Controller
 {
-    public function invoice(Sale $order)
+    public function invoice(Request $request, Sale $order)
     {
+        abort_unless(
+            $request->user()->role === 'admin' || $order->user_id === $request->user()->id,
+            403
+        );
+
         $invoice = $order->load('items');
 
         return Pdf::loadView('invoices.invoice', compact('invoice'))

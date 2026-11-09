@@ -11,7 +11,16 @@ class EnsureUserIsActive
 {
     public function handle(Request $request, Closure $next): Response
     {
-        if (Auth::check() && ! Auth::user()->is_active) {
+        $user = $request->user();
+        if ($user && ! $user->is_active) {
+            if ($request->is('api/*') || $request->expectsJson()) {
+                $user->currentAccessToken()?->delete();
+
+                return response()->json([
+                    'message' => 'Akun Anda telah dinonaktifkan. Hubungi administrator.',
+                ], 403);
+            }
+
             Auth::logout();
             $request->session()->invalidate();
             $request->session()->regenerateToken();

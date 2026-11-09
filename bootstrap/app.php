@@ -6,6 +6,7 @@ use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
+use Illuminate\Routing\Middleware\SubstituteBindings;
 use Laravel\Sanctum\Http\Middleware\EnsureFrontendRequestsAreStateful;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -21,13 +22,14 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->appendToGroup('api', [
             EnsureFrontendRequestsAreStateful::class,
             'throttle:api',
-            \Illuminate\Routing\Middleware\SubstituteBindings::class,
+            SubstituteBindings::class,
         ]);
 
         $middleware->appendToGroup('web', EnsureUserIsActive::class);
         $middleware->alias([
             'admin' => Admin::class,
-            'role'  => RoleMiddleware::class,
+            'active' => EnsureUserIsActive::class,
+            'role' => RoleMiddleware::class,
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions): void {

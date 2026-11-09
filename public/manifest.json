@@ -1,0 +1,26 @@
+{
+    "id": "/",
+    "name": "NesiaStore - Kasir dan Manajemen Toko",
+    "short_name": "NesiaStore",
+    "description": "Aplikasi kasir, produk, stok, dan riwayat penjualan.",
+    "lang": "id-ID",
+    "start_url": "/",
+    "scope": "/",
+    "display": "standalone",
+    "background_color": "#f4f7fb",
+    "theme_color": "#1769ed",
+    "icons": [
+        {
+            "src": "/assets/img/pwa-192.png",
+            "sizes": "192x192",
+            "type": "image/png",
+            "purpose": "any"
+        },
+        {
+            "src": "/assets/img/pwa-512.png",
+            "sizes": "512x512",
+            "type": "image/png",
+            "purpose": "any maskable"
+        }
+    ]
+}

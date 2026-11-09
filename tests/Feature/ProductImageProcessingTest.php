@@ -31,6 +31,11 @@ class ProductImageProcessingTest extends TestCase
             ])
             ->assertRedirect(route('products.index'));
 
+        $this->assertDatabaseHas('products', [
+            'name' => 'Produk Gambar',
+            'is_active' => true,
+        ]);
+
         $product = Product::where('name', 'Produk Gambar')->firstOrFail();
         $oldImage = $product->image;
         $this->assertStringEndsWith('.webp', $oldImage);

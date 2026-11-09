@@ -1,5 +1,8 @@
 @php
     $isAdmin = Auth::check() && Auth::user()->role === 'admin';
+    $outOfStockProductCount = $isAdmin
+        ? \App\Models\Product::query()->where('stock', '<=', 0)->count()
+        : 0;
 @endphp
 
 <!DOCTYPE html>
@@ -8,10 +11,14 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
+    <meta name="theme-color" content="#1769ed">
     <title>@yield('title', 'NesiaStore')</title>
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
     <link rel="icon" type="image/png" sizes="128x128" href="{{ asset('assets/img/favicon.png') }}?v=20261021-2">
     <link rel="apple-touch-icon" href="{{ asset('assets/img/apple-touch-icon.png') }}?v=20261021-2">
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
+    <script src="{{ asset('js/offline-store.js') }}?v=20261109-1" defer></script>
+    <script src="{{ asset('js/pwa.js') }}?v=20261109-1" defer></script>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.1/font/bootstrap-icons.css">
     <style>
@@ -171,6 +178,7 @@
         .admin-sidebar .sidebar-caption { color: rgba(231,239,255,.54); font-size: .62rem; letter-spacing: .11em; margin: 1.55rem .65rem .65rem; }
         .admin-sidebar .nav { gap: .3rem; }
         .admin-sidebar .nav-link { border: 1px solid transparent; border-radius: .7rem; color: rgba(239,244,255,.68); font-size: .81rem; gap: .75rem; min-height: 2.8rem; padding: .7rem .8rem; }
+        .admin-sidebar .product-stock-badge { align-items: center; background: #dc3545; border: 1px solid rgba(255,255,255,.22); border-radius: 999px; color: #fff; display: inline-flex; font-size: .66rem; font-weight: 800; justify-content: center; line-height: 1; margin-left: auto; min-width: 1.35rem; padding: .22rem .38rem; position: absolute; right: .45rem; top: .25rem; }
         .admin-sidebar .nav-link i { color: rgba(219,231,255,.72); font-size: 1.05rem; }
         .admin-sidebar .nav-link:hover { background: rgba(255,255,255,.07); color: #fff; transform: translateX(2px); }
         body.admin-body .admin-sidebar .nav-link.active { background: rgba(78,139,255,.17); border-color: rgba(111,162,255,.2); box-shadow: none; color: #fff; }
@@ -227,6 +235,9 @@
                 @if ($isAdmin)
                     <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
                         <i class="bi bi-box-seam"></i><span>Produk</span>
+                        @if ($outOfStockProductCount > 0)
+                            <span class="product-stock-badge" aria-label="{{ $outOfStockProductCount }} produk stok habis" title="{{ $outOfStockProductCount }} produk stok habis">{{ $outOfStockProductCount }}</span>
+                        @endif
                     </a>
                     <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
                         <i class="bi bi-clock-history"></i><span>Riwayat</span>
@@ -234,12 +245,18 @@
                     <a href="{{ route('admin.cashiers.index') }}" class="nav-link {{ request()->routeIs('admin.cashiers.*') ? 'active' : '' }}">
                         <i class="bi bi-people"></i><span>Kasir</span>
                     </a>
+                    <a href="{{ route('admin.login-activities.index') }}" class="nav-link {{ request()->routeIs('admin.login-activities.*') ? 'active' : '' }}">
+                        <i class="bi bi-shield-check"></i><span>Aktivitas Login</span>
+                    </a>
                 @else
                     <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
                         <i class="bi bi-box-seam"></i><span>Produk</span>
                     </a>
                     <a href="{{ route('kasir.index') }}" class="nav-link {{ request()->routeIs('kasir.*') ? 'active' : '' }}">
                         <i class="bi bi-cart3"></i><span>Kasir</span>
+                    </a>
+                    <a href="{{ route('transactions.index') }}" class="nav-link {{ request()->routeIs('transactions.*') ? 'active' : '' }}">
+                        <i class="bi bi-clock-history"></i><span>Riwayat</span>
                     </a>
                 @endif
             </nav>

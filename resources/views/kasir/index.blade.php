@@ -23,11 +23,17 @@
     .product-item { align-items: center; border-bottom: 1px solid #edf1f6; cursor: pointer; display: flex; justify-content: space-between; gap: 1rem; padding: .7rem .8rem; }
     .product-item:last-child { border-bottom: 0; }
     .product-item:hover { background: #f0f6ff; }
+    .product-item.stock-low { background: #fff8df; }
+    .product-item.stock-out { background: #fff0f0; cursor: not-allowed; opacity: .75; }
+    .product-item.stock-out:hover { background: #fff0f0; }
     .product-image { background: #f4f7fb; border-radius: .3rem; flex: 0 0 2.8rem; height: 2.8rem; object-fit: cover; width: 2.8rem; }
     .product-image-placeholder { align-items: center; background: #f4f7fb; border-radius: .3rem; color: var(--pos-muted); display: flex; flex: 0 0 2.8rem; height: 2.8rem; justify-content: center; width: 2.8rem; }
     .product-info { align-items: center; display: flex; gap: .65rem; min-width: 0; }
     .product-name { color: var(--pos-ink); font-size: .78rem; font-weight: 700; }
     .product-code, .product-stock { color: var(--pos-muted); font-size: .68rem; }
+    .product-stock { font-weight: 700; }
+    .product-stock.stock-low { color: #9a671d; }
+    .product-stock.stock-out { color: #c62828; }
     .product-price { color: var(--pos-blue); font-size: .76rem; font-weight: 700; white-space: nowrap; }
     .btn-pos { background: var(--pos-blue); border: 0; border-radius: .35rem; color: #fff; font-size: .75rem; font-weight: 700; padding: .65rem 1rem; }
     .customer-grid { display: grid; grid-template-columns: 1fr 1fr; gap: .7rem; margin-top: .8rem; }
@@ -36,6 +42,7 @@
     .cart-table { border-collapse: collapse; min-width: 600px; width: 100%; }
     .cart-table th { background: #f8faff; color: #52617d; font-size: .65rem; padding: .7rem; text-align: left; white-space: nowrap; }
     .cart-table td { border-top: 1px solid #edf1f6; color: var(--pos-ink); font-size: .74rem; padding: .7rem; vertical-align: middle; }
+    .cart-table tr.stock-low td { background: #fff8df; }
     .cart-table .text-right { text-align: right; }
     .empty-cart { color: var(--pos-muted); padding: 3.5rem 1rem !important; text-align: center; }
     .qty-control { align-items: center; display: flex; gap: .3rem; }
@@ -66,6 +73,8 @@
     .btn-hold { background: #f2b705; } .btn-cancel { background: #dc3545; } .btn-pay { background: #1769ed; grid-column: 1 / -1; }
     .receipt-status { background: #eaf7ef; border-radius: .3rem; color: #226b44; display: none; font-size: .67rem; line-height: 1.5; margin-top: .65rem; padding: .6rem; }
     .receipt-status.is-visible { display: block; }.receipt-status.is-error { background: #fff3df; color: #865814; }
+    .connection-status { background: #eaf7ef; border-radius: .45rem; color: #226b44; font-size: .72rem; margin-bottom: .8rem; padding: .6rem .8rem; }
+    .connection-status.is-offline { background: #fff3df; color: #865814; }
     .print-receipt { display: none; }
     .print-receipt h1, .print-receipt p { margin: 0; }
     .receipt-head { border-bottom: 1px dashed #222; margin-bottom: .65rem; padding-bottom: .65rem; text-align: center; }
@@ -118,6 +127,7 @@
 
 <div class="pos-page">
     <header class="pos-header"><div><h1>NesiaStore Kasir</h1><p>Jl. Contoh No. 123 &bull; Jember &bull; Telp. 0812-xxxx-xxxx</p></div><div class="transaction-meta"><span>No. Transaksi</span><strong id="transactionNumber"></strong><span id="currentDate"></span></div></header>
+    <div id="connectionStatus" class="connection-status" role="status" aria-live="polite">Terhubung. Transaksi akan tersimpan langsung.</div>
     <main class="pos-grid">
         <section>
             <div class="pos-card"><div class="pos-card-title">Tambah Barang</div><div class="pos-card-body"><div class="search-row"><div class="search-wrap"><input id="searchProduct" type="search" placeholder="Cari nama barang / kode / barcode..." autocomplete="off" autofocus><div class="product-results" id="productResults"></div></div><button class="btn-pos" id="searchButton" type="button">Cari</button></div><div class="customer-grid"><div><label class="field-label" for="customerType">Pelanggan</label><select id="customerType"><option>Umum</option><option>Pelanggan Member</option><option>Member VIP</option></select></div><div><label class="field-label" for="customerContact">No. Member / HP</label><input id="customerContact" type="text" placeholder="Opsional"></div></div></div></div>
@@ -156,14 +166,15 @@
 <script>
 const products = JSON.parse(document.getElementById('product-data').textContent);
 const receiptPrintUrl = @json(route('struk.cetak'));
+const offlineSyncUrl = @json(route('offline-transactions.sync'));
 let cart = [], selectedPayment = 'Tunai';
 const rupiah = value => new Intl.NumberFormat('id-ID', { style: 'currency', currency: 'IDR', maximumFractionDigits: 0 }).format(value || 0);
 const $ = id => document.getElementById(id);
 const grandTotal = () => cart.reduce((sum, item) => sum + item.price * item.qty, 0);
 function productImage(product) { return product.image ? `<img class="product-image" src="${product.image}" alt="${product.name}">` : '<span class="product-image-placeholder" aria-hidden="true">&#9633;</span>'; }
-function renderResults() { const keyword = $('searchProduct').value.toLowerCase().trim(), box = $('productResults'); if (!keyword) { box.style.display = 'none'; return; } const results = products.filter(product => [product.name, product.code, product.barcode].some(value => value.toLowerCase().includes(keyword))); box.innerHTML = results.length ? results.map(product => `<div class="product-item" data-product-id="${product.id}"><div class="product-info">${productImage(product)}<div><div class="product-name">${product.name}</div><div class="product-code">${product.code} - ${product.barcode} &bull; Stok ${product.stock}</div></div></div><div class="product-price">${rupiah(product.price)}</div></div>`).join('') : '<div class="product-item">Barang tidak ditemukan</div>'; box.style.display = 'block'; }
-function addToCart(id) { const product = products.find(item => item.id === id); if (!product) return; const item = cart.find(row => row.id === id); if (item) { if (item.qty < product.stock) item.qty++; else alert('Jumlah melebihi stok yang tersedia.'); } else cart.push({ ...product, qty: 1 }); $('searchProduct').value = ''; $('productResults').style.display = 'none'; renderCart(); }
-function renderCart() { const body = $('cartBody'); body.innerHTML = cart.length ? cart.map((item, index) => `<tr><td>${index + 1}</td><td><div class="product-info">${productImage(item)}<div><strong>${item.name}</strong><div class="product-code">${item.code}</div></div></div></td><td>${rupiah(item.price)}</td><td><div class="qty-control"><button type="button" data-action="minus" data-id="${item.id}">-</button><input type="number" min="1" max="${item.stock}" value="${item.qty}" data-action="qty" data-id="${item.id}"><button type="button" data-action="plus" data-id="${item.id}">+</button></div></td><td class="text-right"><strong>${rupiah(item.price * item.qty)}</strong></td><td><button type="button" class="remove-btn" data-action="remove" data-id="${item.id}" aria-label="Hapus ${item.name}">&times;</button></td></tr>`).join('') : '<tr><td class="empty-cart" colspan="6">Keranjang masih kosong.<br>Silakan cari atau scan barang.</td></tr>'; calculateTotal(); }
+function renderResults() { const keyword = $('searchProduct').value.toLowerCase().trim(), box = $('productResults'); if (!keyword) { box.style.display = 'none'; return; } const results = products.filter(product => [product.name, product.code, product.barcode].some(value => value.toLowerCase().includes(keyword))); box.innerHTML = results.length ? results.map(product => { const stockClass = product.stock <= 0 ? 'stock-out' : (product.stock <= 5 ? 'stock-low' : ''); const stockLabel = product.stock <= 0 ? 'Stok habis' : `Stok ${product.stock}`; return `<div class="product-item ${stockClass}" data-product-id="${product.id}" ${product.stock <= 0 ? 'aria-disabled="true"' : ''}><div class="product-info">${productImage(product)}<div><div class="product-name">${product.name}</div><div class="product-code">${product.code} - ${product.barcode} &bull; <span class="product-stock ${stockClass}">${stockLabel}</span></div></div></div><div class="product-price">${rupiah(product.price)}</div></div>`; }).join('') : '<div class="product-item">Barang tidak ditemukan</div>'; box.style.display = 'block'; }
+function addToCart(id) { const product = products.find(item => item.id === id); if (!product) return; if (product.stock <= 0) { alert('Produk sedang habis.'); return; } const item = cart.find(row => row.id === id); if (item) { if (item.qty < product.stock) item.qty++; else alert('Jumlah melebihi stok yang tersedia.'); } else cart.push({ ...product, qty: 1 }); $('searchProduct').value = ''; $('productResults').style.display = 'none'; renderCart(); }
+function renderCart() { const body = $('cartBody'); body.innerHTML = cart.length ? cart.map((item, index) => `<tr class="${item.stock <= 5 ? 'stock-low' : ''}"><td>${index + 1}</td><td><div class="product-info">${productImage(item)}<div><strong>${item.name}</strong><div class="product-code">${item.code}</div></div></div></td><td>${rupiah(item.price)}</td><td><div class="qty-control"><button type="button" data-action="minus" data-id="${item.id}">-</button><input type="number" min="1" max="${item.stock}" value="${item.qty}" data-action="qty" data-id="${item.id}"><button type="button" data-action="plus" data-id="${item.id}">+</button></div></td><td class="text-right"><strong>${rupiah(item.price * item.qty)}</strong></td><td><button type="button" class="remove-btn" data-action="remove" data-id="${item.id}" aria-label="Hapus ${item.name}">&times;</button></td></tr>`).join('') : '<tr><td class="empty-cart" colspan="6">Keranjang masih kosong.<br>Silakan cari atau scan barang.</td></tr>'; calculateTotal(); }
 function isCashPayment() { return selectedPayment === 'Tunai'; }
 function calculateTotal() { const qty = cart.reduce((sum, item) => sum + item.qty, 0); $('itemCount').textContent = `${qty} Item`; $('grandTotal').textContent = rupiah(grandTotal()); if (!isCashPayment()) $('payment').value = cart.length ? grandTotal() : ''; calculateChange(); renderQuickPayments(); }
 function calculateChange() { const nonCash = !isCashPayment(); $('changeBox').hidden = nonCash; $('payment').readOnly = nonCash; $('quickPaymentLabel').hidden = nonCash; $('quickPayments').hidden = nonCash; $('paymentLabel').textContent = nonCash ? 'Nominal pembayaran' : 'Uang Dibayar'; $('paymentHelp').textContent = nonCash ? `Terima pembayaran ${selectedPayment} di luar aplikasi dan pastikan berhasil sebelum dikonfirmasi.` : 'Masukkan jumlah uang yang diterima dari pelanggan.'; $('payButton').textContent = nonCash ? 'KONFIRMASI & CETAK' : 'BAYAR & CETAK'; if (nonCash) return; const difference = (Number($('payment').value) || 0) - grandTotal(); $('changeBox').classList.toggle('short-payment', difference < 0); $('changeLabel').textContent = difference < 0 ? 'UANG KURANG' : 'KEMBALIAN'; $('change').textContent = rupiah(Math.abs(difference)); }
@@ -178,8 +189,10 @@ function renderReceipt() {
     $('printReceipt').innerHTML = `<header class="receipt-head"><h1>NesiaStore</h1><p>Jl. Transmenia No. 123 - Sabu Raijua</p><p>Telp. 0812-xxxx-xxxx</p></header><div class="receipt-meta"><div><span>No. Transaksi</span><strong>${escapeReceiptText($('transactionNumber').textContent)}</strong></div><div><span>Waktu</span><span>${escapeReceiptText(now.toLocaleString('id-ID'))}</span></div><div><span>Pelanggan</span><span>${escapeReceiptText($('customerType').value)}</span></div></div><div class="receipt-items">${receiptRows}</div><div class="receipt-totals"><div><span>Subtotal</span><span>${rupiah(subtotal)}</span></div><div class="receipt-grand"><span>TOTAL</span><span>${rupiah(total)}</span></div><div><span>${escapeReceiptText(selectedPayment)}</span><span>${rupiah(paid)}</span></div><div><span>Kembalian</span><span>${rupiah(paid - total)}</span></div></div><p class="receipt-thanks">Terima kasih atas kunjungan Anda.</p>`;
 }
 function receiptPayload() { return { transaction_number: $('transactionNumber').textContent, customer: $('customerType').value, payment_method: selectedPayment, paid: Number($('payment').value) || 0, items: cart.map(({ id, qty }) => ({ product_id: id, qty })) }; }
+function offlineSalePayload() { return { transaction_number: $('transactionNumber').textContent, customer: $('customerType').value, payment_method: selectedPayment, paid: Number($('payment').value) || 0, sold_at: new Date().toISOString(), items: cart.map(item => ({ product_id: item.id, product_name: item.name, unit_price: item.price, qty: item.qty, stock: item.stock, offline_token: item.offline_token })) }; }
 function setTransactionMeta() { const now = new Date(), suffix = Math.random().toString(36).slice(2, 6).toUpperCase(); $('transactionNumber').textContent = `TRX-${now.toISOString().slice(0, 10).replaceAll('-', '')}-${String(now.getHours() * 3600 + now.getMinutes() * 60 + now.getSeconds()).padStart(6, '0')}-${suffix}`; $('currentDate').textContent = now.toLocaleString('id-ID'); }
 function resetTransaction() { cart = []; $('payment').value = ''; $('printReceipt').innerHTML = ''; renderCart(); setTransactionMeta(); }
+function updateConnectionStatus() { const offline = !navigator.onLine; $('connectionStatus').classList.toggle('is-offline', offline); $('connectionStatus').textContent = offline ? 'Offline. Transaksi akan disimpan di perangkat dan disinkronkan saat internet kembali.' : 'Online. Transaksi tersimpan langsung; antrean offline akan disinkronkan otomatis.'; }
 $('searchProduct').addEventListener('input', renderResults); $('searchButton').addEventListener('click', renderResults); $('searchProduct').addEventListener('keydown', event => { if (event.key === 'Enter') { const first = $('productResults').querySelector('[data-product-id]'); if (first) addToCart(Number(first.dataset.productId)); } }); $('productResults').addEventListener('click', event => { const item = event.target.closest('[data-product-id]'); if (item) addToCart(Number(item.dataset.productId)); });
 $('cartBody').addEventListener('click', event => { const control = event.target.closest('[data-action]'); if (!control) return; const item = cart.find(row => row.id === Number(control.dataset.id)); if (!item) return; if (control.dataset.action === 'remove') cart = cart.filter(row => row.id !== item.id); if (control.dataset.action === 'minus') item.qty--; if (control.dataset.action === 'plus' && item.qty < item.stock) item.qty++; if (item.qty < 1) cart = cart.filter(row => row.id !== item.id); renderCart(); }); $('cartBody').addEventListener('change', event => { if (event.target.dataset.action !== 'qty') return; const item = cart.find(row => row.id === Number(event.target.dataset.id)); if (item) item.qty = Math.min(item.stock, Math.max(1, Number(event.target.value) || 1)); renderCart(); });
  $('payment').addEventListener('input', calculateChange); $('quickPayments').addEventListener('click', event => { const button = event.target.closest('[data-payment]'); if (!button) return; $('payment').value = button.dataset.payment === 'exact' ? grandTotal() : button.dataset.payment; calculateChange(); }); $('paymentMethod').addEventListener('click', event => { const button = event.target.closest('button'); if (!button) return; selectedPayment = button.textContent; document.querySelectorAll('#paymentMethod button').forEach(item => item.classList.toggle('active', item === button)); calculateTotal(); });
@@ -222,6 +235,19 @@ $('payButton').addEventListener('click', () => {
         })
         .catch(error => {
             status.className = 'receipt-status is-visible is-error';
+            if (!error.status && (!navigator.onLine || error instanceof TypeError)) {
+                const offlineSale = offlineSalePayload();
+                return window.NesiaOffline.queueTransaction(offlineSale).then(async () => {
+                    renderReceipt();
+                    status.textContent = `Koneksi terputus. Transaksi ${offlineSale.transaction_number} tersimpan di perangkat dan menunggu sinkronisasi. Struk akan dicetak dari browser.`;
+                    window.print();
+                    resetTransaction();
+                    if (navigator.onLine) await window.NesiaOffline.syncQueue();
+                }).catch(() => {
+                    status.textContent = 'Koneksi terputus dan penyimpanan lokal gagal. Jangan tutup halaman; catat transaksi secara manual.';
+                });
+                return;
+            }
             if (error.status && error.status < 500) {
                 status.textContent = `${error.message} Struk tidak dicetak; keranjang tetap tersimpan.`;
                 return;
@@ -239,5 +265,20 @@ $('payButton').addEventListener('click', () => {
 });
 document.addEventListener('keydown', event => { if (event.key === 'F2') { event.preventDefault(); $('searchProduct').focus(); } if (event.key === 'F4') { event.preventDefault(); $('payment').focus(); } if (event.key === 'Escape') $('cancelButton').click(); });
 setTransactionMeta(); renderCart(); calculateChange();
+window.addEventListener('DOMContentLoaded', async () => {
+    try {
+        await window.NesiaOffline.saveSnapshot({
+            userId: @json(auth()->id()),
+            userName: @json(auth()->user()->name),
+            csrfToken: document.querySelector('meta[name="csrf-token"]').content,
+            products,
+            savedAt: new Date().toISOString(),
+        });
+        await window.NesiaOffline.syncQueue();
+    } catch {}
+    updateConnectionStatus();
+});
+window.addEventListener('online', updateConnectionStatus);
+window.addEventListener('offline', updateConnectionStatus);
 </script>
 @endsection

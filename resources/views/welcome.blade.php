@@ -4,7 +4,8 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
     <meta name="theme-color" content="#f3f7ff">
-    <title>NesiaStore — Ruang kerja toko yang lebih hidup</title>
+    <title>NesiaStore — Aplikasi Kasir &amp; Manajemen Toko</title>
+    <link rel="manifest" href="{{ asset('manifest.json') }}">
     <link rel="icon" type="image/x-icon" href="{{ asset('favicon.ico') }}?v=20261021-2">
     <link href="{{ asset('assets/vendor/bootstrap-icons/bootstrap-icons.css') }}" rel="stylesheet">
     <style>
@@ -82,6 +83,17 @@
         .activity-value { color: #c5e1ff; font-size: .68rem; font-weight: 750; }
         .orbit { border: 1px solid rgba(23,105,220,.2); border-radius: 50%; height: 125%; left: -9%; pointer-events: none; position: absolute; top: -12%; transform: rotate(-24deg); width: 118%; z-index: -1; }
         .orbit::after { background: var(--accent-blue); border-radius: 50%; box-shadow: 0 0 24px rgba(23,105,220,.4); content: ""; height: 8px; left: 15%; position: absolute; top: 18%; width: 8px; }
+        .about { border-top: 1px solid var(--line); padding: 3.5rem 0 3.8rem; }
+        .about-heading { margin-bottom: 1.7rem; max-width: 620px; }
+        .about-heading h2 { color: var(--paper); font-size: clamp(1.7rem, 3.5vw, 2.5rem); letter-spacing: -.055em; line-height: 1.12; margin: .65rem 0; }
+        .about-heading p { color: var(--muted); font-size: .9rem; line-height: 1.75; margin: 0; }
+        .about-grid { display: grid; gap: .9rem; grid-template-columns: repeat(3, minmax(0, 1fr)); }
+        .about-card { background: rgba(255,255,255,.82); border: 1px solid var(--line); border-radius: 12px; padding: 1.2rem; }
+        .about-card i { align-items: center; background: var(--panel-soft); border-radius: 9px; color: var(--accent-blue); display: inline-flex; height: 2.3rem; justify-content: center; width: 2.3rem; }
+        .about-card h3 { color: var(--paper); font-size: .9rem; margin: .8rem 0 .4rem; }
+        .about-card p { color: var(--muted); font-size: .75rem; line-height: 1.7; margin: 0; }
+        .about-note { color: var(--muted); font-size: .72rem; line-height: 1.7; margin: 1.1rem 0 0; }
+        .about-note strong { color: var(--paper); }
         .section-bottom { align-items: center; border-top: 1px solid var(--line); display: flex; justify-content: space-between; padding: 1.25rem 0 2rem; }
         .bottom-label { color: #687d9d; font-size: .63rem; letter-spacing: .12em; text-transform: uppercase; }
         .benefits { display: flex; flex-wrap: wrap; gap: 1.6rem; }
@@ -114,6 +126,8 @@
             .sales-card { min-height: 235px; }.chart { height: 98px; }
             .section-bottom { align-items: flex-start; flex-direction: column; gap: 1rem; padding-top: 1.1rem; }
             .benefits { gap: .8rem 1.2rem; }
+            .about { padding: 2.8rem 0; }
+            .about-grid { grid-template-columns: 1fr; }
         }
         @media (max-width: 390px) {
             .page { padding: 0 1rem; }.brand-name { font-size: .88rem; }.top-links { gap: .55rem; }
@@ -142,20 +156,20 @@
         </nav>
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-copy">
-                <span class="eyebrow">Ruang kerja pemilik toko</span>
-                <h1 id="hero-title">Lebih rapi.<span>Lebih leluasa.</span></h1>
-                <p class="intro">Dari transaksi sampai stok barang, semua urusan toko ada di satu tempat. Biar kamu bisa fokus membesarkan usaha.</p>
+                <span class="eyebrow">Aplikasi kasir &amp; manajemen toko</span>
+                <h1 id="hero-title">Kelola toko.<span>Dari satu tempat.</span></h1>
+                <p class="intro">NesiaStore adalah aplikasi berbasis web untuk mencatat penjualan, mengelola produk dan stok, serta melihat riwayat transaksi toko dalam satu sistem.</p>
                 <div class="hero-actions">
-                    <a class="cta" href="{{ route('login') }}">Masuk ke workspace <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
-                    <a class="text-link" href="{{ route('register') }}">Belum punya akun?</a>
+                    <a class="cta" href="{{ route('login') }}">Masuk ke aplikasi <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
+                    <a class="text-link" href="#tentang-nesiastore">Kenali fitur</a>
                 </div>
-                <div class="hero-note"><i class="bi bi-check-circle-fill" aria-hidden="true"></i>Praktis untuk operasional harian toko.</div>
+                <div class="hero-note"><i class="bi bi-check-circle-fill" aria-hidden="true"></i>Dirancang untuk membantu operasional toko harian.</div>
             </div>
-            <div class="dashboard-wrap" aria-label="Ilustrasi ringkasan dashboard toko">
+            <div class="dashboard-wrap" aria-label="Contoh tampilan ringkasan dashboard toko">
                 <span class="orbit" aria-hidden="true"></span>
                 <div class="dashboard">
                     <div class="dash-top">
-                        <div class="dash-brand"><span class="dash-logo"><i class="bi bi-shop" aria-hidden="true"></i></span><span>NesiaStore<small>RINGKASAN TOKO</small></span></div>
+                        <div class="dash-brand"><span class="dash-logo"><i class="bi bi-shop" aria-hidden="true"></i></span><span>NesiaStore<small>CONTOH DASHBOARD</small></span></div>
                         <span class="dash-day">Hari ini <i class="bi bi-chevron-down" aria-hidden="true"></i></span>
                     </div>
                     <div class="dash-content">
@@ -178,6 +192,31 @@
                 </div>
             </div>
         </section>
+        <section class="about" id="tentang-nesiastore" aria-labelledby="about-title">
+            <div class="about-heading">
+                <span class="eyebrow">Semua kebutuhan toko, satu aplikasi</span>
+                <h2 id="about-title">Apa yang bisa dilakukan dengan NesiaStore?</h2>
+                <p>Gunakan NesiaStore melalui browser untuk menjalankan pekerjaan toko sehari-hari tanpa berpindah-pindah aplikasi.</p>
+            </div>
+            <div class="about-grid">
+                <article class="about-card">
+                    <i class="bi bi-cart-check" aria-hidden="true"></i>
+                    <h3>Proses transaksi penjualan</h3>
+                    <p>Cari atau scan produk, masukkan barang ke keranjang, pilih metode pembayaran, lalu simpan transaksi dan cetak struk.</p>
+                </article>
+                <article class="about-card">
+                    <i class="bi bi-box-seam" aria-hidden="true"></i>
+                    <h3>Kelola produk dan stok</h3>
+                    <p>Catat informasi produk, harga, dan jumlah stok. Status stok menipis atau habis membantu menentukan barang yang perlu diperiksa.</p>
+                </article>
+                <article class="about-card">
+                    <i class="bi bi-clipboard-data" aria-hidden="true"></i>
+                    <h3>Pantau riwayat dan aktivitas</h3>
+                    <p>Lihat ringkasan penjualan dan telusuri riwayat transaksi berdasarkan periode. Admin juga dapat mengelola akun kasir.</p>
+                </article>
+            </div>
+            <p class="about-note"><strong>Untuk pemilik atau admin:</strong> kelola produk, stok, akun kasir, dan pantau laporan. <strong>Untuk kasir:</strong> proses penjualan dan lihat transaksi yang dibuat sendiri.</p>
+        </section>
         <section class="section-bottom" aria-label="Keunggulan NesiaStore">
             <span class="bottom-label">Satu workspace, banyak beres</span>
             <div class="benefits">
@@ -188,5 +227,6 @@
         </section>
         <footer class="footer">Dirancang untuk bantu toko <span>terus bertumbuh.</span></footer>
     </main>
+    <script src="{{ asset('js/pwa.js') }}?v=20261109-1" defer></script>
 </body>
 </html>

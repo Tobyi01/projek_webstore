@@ -26,6 +26,9 @@
                         <x-nav-link :href="route('kasir.index')" :active="request()->routeIs('kasir.*')" style="color: #0d5e3c; font-weight: 700;">
                             {{ __('Kasir') }}
                         </x-nav-link>
+                        <x-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')" style="color: #0d5e3c; font-weight: 700;">
+                            {{ __('Riwayat') }}
+                        </x-nav-link>
                     @endif
                 </div>
             </div>
@@ -94,6 +97,9 @@
             @else
                 <x-responsive-nav-link :href="route('kasir.index')" :active="request()->routeIs('kasir.*')">
                     {{ __('Kasir') }}
+                </x-responsive-nav-link>
+                <x-responsive-nav-link :href="route('transactions.index')" :active="request()->routeIs('transactions.*')">
+                    {{ __('Riwayat') }}
                 </x-responsive-nav-link>
             @endif
         </div>

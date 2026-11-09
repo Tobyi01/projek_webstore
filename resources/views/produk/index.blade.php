@@ -43,7 +43,7 @@
                     </thead> 
                     <tbody> 
                         @forelse($products as $product) 
-                            <tr> 
+                            <tr class="{{ $product->stock <= 0 ? 'table-danger' : ($product->stock <= 5 ? 'table-warning' : '') }}"> 
                                 <td>{{ $products->firstItem() + $loop->index }}</td> 
                                 <td>
                                     @if($product->image)
@@ -63,7 +63,15 @@
                                 </td> 
                                 <td>{{ $product->category ?? '-' }}</td> 
                                 <td>Rp {{ number_format($product->price, 0, ',', '.') }}</td> 
-                                <td>{{ $product->stock }}</td> 
+                                <td>
+                                    @if($product->stock <= 0)
+                                        <span class="badge bg-danger">Habis</span>
+                                    @elseif($product->stock <= 5)
+                                        <span class="badge bg-warning text-dark">Menipis: {{ $product->stock }}</span>
+                                    @else
+                                        <span class="badge bg-success">{{ $product->stock }}</span>
+                                    @endif
+                                </td> 
                                 <td> 
                                     @if($product->is_active) 
                                         <span class="badge bg-success">Aktif</span> 

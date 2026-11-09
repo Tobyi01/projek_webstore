@@ -22,6 +22,8 @@ class Sale extends Model
         'paid',
         'change',
         'sold_at',
+        'is_offline',
+        'stock_conflicts',
     ];
 
     protected function casts(): array
@@ -36,6 +38,8 @@ class Sale extends Model
             'paid' => 'decimal:2',
             'change' => 'decimal:2',
             'sold_at' => 'datetime',
+            'is_offline' => 'boolean',
+            'stock_conflicts' => 'array',
         ];
     }
 

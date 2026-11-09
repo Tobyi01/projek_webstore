@@ -118,6 +118,137 @@ class TransactionHistoryTest extends TestCase
         $this->assertSame(5, $product->fresh()->stock);
     }
 
+    public function test_offline_transaction_sync_records_stock_conflicts_for_admin_review(): void
+    {
+        $cashier = User::factory()->create(['role' => 'kasir']);
+        $product = $this->createProduct(stock: 2, price: 3000);
+        $token = hash_hmac(
+            'sha256',
+            json_encode([$cashier->id, $product->id, $product->name, 300000, 5], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            config('app.key')
+        );
+
+        $response = $this->actingAs($cashier)->postJson(route('offline-transactions.sync'), [
+            'transaction_number' => 'OFF-CONFLICT-001',
+            'customer' => 'Umum',
+            'payment_method' => 'QRIS',
+            'paid' => 6000,
+            'sold_at' => now()->toIso8601String(),
+            'items' => [[
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'unit_price' => 3000,
+                'qty' => 2,
+                'stock' => 5,
+                'offline_token' => $token,
+            ]],
+        ]);
+
+        $response->assertOk()
+            ->assertJsonPath('success', true)
+            ->assertJsonPath('has_stock_conflicts', false);
+        $this->assertDatabaseHas('sales', [
+            'transaction_number' => 'OFF-CONFLICT-001',
+            'is_offline' => true,
+        ]);
+        $this->assertSame(0, $product->fresh()->stock);
+
+        $product->update(['stock' => 1]);
+        $secondToken = hash_hmac(
+            'sha256',
+            json_encode([$cashier->id, $product->id, $product->name, 300000, 5], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            config('app.key')
+        );
+        $this->actingAs($cashier)->postJson(route('offline-transactions.sync'), [
+            'transaction_number' => 'OFF-CONFLICT-002',
+            'customer' => 'Umum',
+            'payment_method' => 'Tunai',
+            'paid' => 6000,
+            'sold_at' => now()->toIso8601String(),
+            'items' => [[
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'unit_price' => 3000,
+                'qty' => 2,
+                'stock' => 5,
+                'offline_token' => $secondToken,
+            ]],
+        ])->assertOk()->assertJsonPath('has_stock_conflicts', true);
+
+        $this->assertDatabaseHas('sales', [
+            'transaction_number' => 'OFF-CONFLICT-002',
+            'is_offline' => true,
+        ]);
+        $this->assertSame(0, $product->fresh()->stock);
+        $this->assertStringContainsString('Produk Uji', $this->get(route('transactions.index'))->getContent());
+    }
+
+    public function test_offline_sync_rejects_modified_catalog_price(): void
+    {
+        $cashier = User::factory()->create(['role' => 'kasir']);
+        $product = $this->createProduct(stock: 5, price: 3000);
+        $token = hash_hmac(
+            'sha256',
+            json_encode([$cashier->id, $product->id, $product->name, 300000, 5], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            config('app.key')
+        );
+
+        $this->actingAs($cashier)->postJson(route('offline-transactions.sync'), [
+            'transaction_number' => 'OFF-INVALID-001',
+            'customer' => 'Umum',
+            'payment_method' => 'Tunai',
+            'paid' => 1,
+            'sold_at' => now()->toIso8601String(),
+            'items' => [[
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'unit_price' => 0.5,
+                'qty' => 1,
+                'stock' => 5,
+                'offline_token' => $token,
+            ]],
+        ])->assertUnprocessable()->assertJsonValidationErrors('items');
+
+        $this->assertDatabaseCount('sales', 0);
+        $this->assertSame(5, $product->fresh()->stock);
+    }
+
+    public function test_retried_offline_sync_is_idempotent(): void
+    {
+        $cashier = User::factory()->create(['role' => 'kasir']);
+        $product = $this->createProduct(stock: 5, price: 3000);
+        $token = hash_hmac(
+            'sha256',
+            json_encode([$cashier->id, $product->id, $product->name, 300000, 5], JSON_UNESCAPED_UNICODE | JSON_UNESCAPED_SLASHES),
+            config('app.key')
+        );
+        $payload = [
+            'transaction_number' => 'OFF-RETRY-001',
+            'customer' => 'Umum',
+            'payment_method' => 'Tunai',
+            'paid' => 6000,
+            'sold_at' => now()->toIso8601String(),
+            'items' => [[
+                'product_id' => $product->id,
+                'product_name' => $product->name,
+                'unit_price' => 3000,
+                'qty' => 2,
+                'stock' => 5,
+                'offline_token' => $token,
+            ]],
+        ];
+
+        $this->actingAs($cashier)->postJson(route('offline-transactions.sync'), $payload)
+            ->assertOk()
+            ->assertJsonPath('already_synced', false);
+        $this->postJson(route('offline-transactions.sync'), $payload)
+            ->assertOk()
+            ->assertJsonPath('already_synced', true);
+
+        $this->assertDatabaseCount('sales', 1);
+        $this->assertSame(3, $product->fresh()->stock);
+    }
+
     public function test_history_can_filter_by_day_month_and_year(): void
     {
         Carbon::setTestNow('2026-09-29 12:00:00');
@@ -144,6 +275,42 @@ class TransactionHistoryTest extends TestCase
             ->assertViewHas('groups', fn ($groups): bool => $groups->count() === 2);
 
         Carbon::setTestNow();
+    }
+
+    public function test_cashier_can_view_only_their_own_transaction_history(): void
+    {
+        Carbon::setTestNow('2026-09-29 12:00:00');
+        $cashier = User::factory()->create(['role' => 'kasir']);
+        $otherCashier = User::factory()->create(['role' => 'kasir']);
+        $this->createSale($cashier, 'TRX-CASHIER-OWN', '2026-09-29 10:00:00');
+        $this->createSale($otherCashier, 'TRX-CASHIER-OTHER', '2026-09-29 11:00:00');
+
+        $this->actingAs($cashier)
+            ->get(route('transactions.index', ['period' => 'day', 'date' => '2026-09-29']))
+            ->assertOk()
+            ->assertViewHas('saleCount', 1)
+            ->assertSee(route('transactions.index'), false)
+            ->assertSee('TRX-CASHIER-OWN')
+            ->assertDontSee('TRX-CASHIER-OTHER');
+
+        Carbon::setTestNow();
+    }
+
+    public function test_cashier_can_download_their_own_invoice_but_not_another_cashiers(): void
+    {
+        $cashier = User::factory()->create(['role' => 'kasir']);
+        $otherCashier = User::factory()->create(['role' => 'kasir']);
+        $ownSale = $this->createSale($cashier, 'TRX-CASHIER-OWN-INVOICE', now()->toDateTimeString());
+        $sale = $this->createSale($otherCashier, 'TRX-CASHIER-INVOICE', now()->toDateTimeString());
+
+        $this->actingAs($cashier)
+            ->get(route('sales.invoice', $ownSale))
+            ->assertOk()
+            ->assertHeader('content-type', 'application/pdf');
+
+        $this->actingAs($cashier)
+            ->get(route('sales.invoice', $sale))
+            ->assertForbidden();
     }
 
     private function createProduct(int $stock, int $price): Product

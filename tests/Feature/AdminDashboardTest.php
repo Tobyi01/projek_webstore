@@ -61,6 +61,35 @@ class AdminDashboardTest extends TestCase
             ->assertSee(route('products.index'), false);
     }
 
+    public function test_admin_product_menu_shows_the_count_of_out_of_stock_products(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+        Product::create([
+            'name' => 'Produk habis satu',
+            'price' => 1000,
+            'stock' => 0,
+            'is_active' => true,
+        ]);
+        Product::create([
+            'name' => 'Produk habis dua',
+            'price' => 1000,
+            'stock' => 0,
+            'is_active' => false,
+        ]);
+        Product::create([
+            'name' => 'Produk menipis',
+            'price' => 1000,
+            'stock' => 3,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($admin)
+            ->get(route('dashboard'))
+            ->assertOk()
+            ->assertSee('product-stock-badge', false)
+            ->assertSee('2 produk stok habis');
+    }
+
     public function test_cashier_cannot_open_product_creation_form(): void
     {
         $cashier = User::factory()->create(['role' => 'kasir']);

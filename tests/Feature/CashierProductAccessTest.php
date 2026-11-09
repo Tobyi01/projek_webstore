@@ -42,6 +42,37 @@ class CashierProductAccessTest extends TestCase
             ->assertDontSee(route('products.edit', $product), false);
     }
 
+    public function test_low_and_out_of_stock_products_are_highlighted_and_visible_to_cashiers(): void
+    {
+        $cashier = User::factory()->create(['role' => 'kasir']);
+        Product::create([
+            'name' => 'Produk Stok Menipis',
+            'price' => 1000,
+            'stock' => 5,
+            'is_active' => true,
+        ]);
+        Product::create([
+            'name' => 'Produk Stok Habis',
+            'price' => 1000,
+            'stock' => 0,
+            'is_active' => true,
+        ]);
+
+        $this->actingAs($cashier)
+            ->get(route('products.index'))
+            ->assertOk()
+            ->assertSee('table-warning', false)
+            ->assertSee('Menipis: 5')
+            ->assertSee('table-danger', false)
+            ->assertSee('Habis');
+
+        $this->actingAs($cashier)
+            ->get(route('kasir.index'))
+            ->assertOk()
+            ->assertSee('Produk Stok Menipis')
+            ->assertSee('Produk Stok Habis');
+    }
+
     public function test_cashier_cannot_create_update_or_delete_products(): void
     {
         $cashier = User::factory()->create(['role' => 'kasir']);

@@ -1,7 +1,9 @@
 <?php
 
 use App\Http\Controllers\Admin\CashierController;
+use App\Http\Controllers\Admin\LoginActivityController;
 use App\Http\Controllers\KasirController;
+use App\Http\Controllers\OfflineTransactionController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\StrukController;
@@ -76,6 +78,7 @@ Route::middleware(['auth', 'admin'])->group(function () use ($adminDashboard) {
     Route::get('/admin/kasir', [CashierController::class, 'index'])->name('admin.cashiers.index');
     Route::patch('/admin/kasir/{user}/status', [CashierController::class, 'toggleStatus'])->name('admin.cashiers.status');
     Route::delete('/admin/kasir/{user}', [CashierController::class, 'destroy'])->name('admin.cashiers.destroy');
+    Route::get('/admin/aktivitas-login', [LoginActivityController::class, 'index'])->name('admin.login-activities.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -86,14 +89,17 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/kasir', [KasirController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('kasir.index');
+Route::post('/offline-transactions/sync', [OfflineTransactionController::class, 'sync'])
+    ->middleware(['auth', 'verified', 'role:admin,kasir', 'throttle:30,1'])
+    ->name('offline-transactions.sync');
 Route::get('/transaksi', [TransactionHistoryController::class, 'index'])
-    ->middleware(['auth', 'verified', 'admin'])
+    ->middleware(['auth', 'verified', 'role:admin,kasir'])
     ->name('transactions.index');
 Route::get('/transaksi/{order}/invoice', [StrukController::class, 'invoice'])
-    ->middleware(['auth', 'verified', 'admin'])
+    ->middleware(['auth', 'verified', 'role:admin,kasir'])
     ->name('sales.invoice');
 Route::get('/orders/{order}/invoice', [StrukController::class, 'invoice'])
-    ->middleware(['auth', 'verified', 'admin'])
+    ->middleware(['auth', 'verified', 'role:admin,kasir'])
     ->name('orders.invoice');
 Route::get('/', function () {
     return view('welcome');
