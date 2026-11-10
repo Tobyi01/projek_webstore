@@ -11,6 +11,8 @@ class Sale extends Model
     protected $fillable = [
         'transaction_number',
         'user_id',
+        'cashier_shift_id',
+        'customer_id',
         'customer',
         'payment_method',
         'subtotal',
@@ -51,5 +53,15 @@ class Sale extends Model
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);
+    }
+
+    public function customer(): BelongsTo
+    {
+        return $this->belongsTo(Customer::class);
+    }
+
+    public function cashierShift(): BelongsTo
+    {
+        return $this->belongsTo(CashierShift::class);
     }
 }

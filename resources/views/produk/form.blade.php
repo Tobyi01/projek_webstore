@@ -1,3 +1,7 @@
+@php
+    $suppliers = \App\Models\Supplier::query()->orderBy('name')->get();
+@endphp
+
 <div class="mb-3">
     <label class="form-label">Nama Product</label>
     <input
@@ -12,6 +16,28 @@
             {{ $message }}
         </div>
     @enderror
+</div>
+
+<div class="row">
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">SKU / Kode produk</label>
+            <input type="text" name="sku" class="form-control" value="{{ old('sku', $product->sku ?? '') }}">
+        </div>
+    </div>
+    <div class="col-md-6">
+        <div class="mb-3">
+            <label class="form-label">Supplier</label>
+            <select name="supplier_id" class="form-select">
+                <option value="">Tanpa supplier</option>
+                @foreach ($suppliers as $supplier)
+                    <option value="{{ $supplier->id }}" {{ old('supplier_id', $product->supplier_id ?? '') == $supplier->id ? 'selected' : '' }}>
+                        {{ $supplier->name }}
+                    </option>
+                @endforeach
+            </select>
+        </div>
+    </div>
 </div>
 
 <div class="mb-3">
@@ -34,7 +60,7 @@
 </div>
 
 <div class="row">
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="mb-3">
             <label class="form-label">Harga</label>
             <input
@@ -52,7 +78,7 @@
         </div>
     </div>
 
-    <div class="col-md-6">
+    <div class="col-md-4">
         <div class="mb-3">
             <label class="form-label">Stock</label>
             <input
@@ -60,6 +86,19 @@
                 name="stock"
                 class="form-control"
                 value="{{ old('stock', $product->stock ?? 0) }}"
+            >
+        </div>
+    </div>
+
+    <div class="col-md-4">
+        <div class="mb-3">
+            <label class="form-label">Stok minimum</label>
+            <input
+                type="number"
+                name="minimum_stock"
+                class="form-control"
+                value="{{ old('minimum_stock', $product->minimum_stock ?? 5) }}"
+                min="0"
             >
         </div>
     </div>

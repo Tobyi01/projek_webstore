@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderPlaced;
+use App\Models\CashierShift;
 use App\Models\Product;
 use App\Models\Sale;
 use Illuminate\Http\JsonResponse;
@@ -80,6 +81,18 @@ class OfflineTransactionController extends Controller
         }
 
         $sale = DB::transaction(function () use ($data, $quantities, $request): Sale {
+            $shift = CashierShift::query()
+                ->where('user_id', $request->user()->id)
+                ->whereNull('closed_at')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $shift) {
+                throw ValidationException::withMessages([
+                    'shift' => 'Buka shift kasir untuk menyinkronkan transaksi offline.',
+                ]);
+            }
+
             $products = Product::query()
                 ->whereIn('id', $quantities->keys())
                 ->lockForUpdate()
@@ -120,6 +133,7 @@ class OfflineTransactionController extends Controller
             $sale = Sale::query()->create([
                 'transaction_number' => $data['transaction_number'],
                 'user_id' => $request->user()->id,
+                'cashier_shift_id' => $shift->id,
                 'customer' => $data['customer'],
                 'payment_method' => $data['payment_method'],
                 'subtotal' => $subtotal,

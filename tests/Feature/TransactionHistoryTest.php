@@ -3,6 +3,7 @@
 namespace Tests\Feature;
 
 use App\Models\Product;
+use App\Models\CashierShift;
 use App\Models\Sale;
 use App\Models\User;
 use App\Services\ReceiptPrinter;
@@ -18,6 +19,7 @@ class TransactionHistoryTest extends TestCase
     public function test_successful_payment_saves_selected_items_and_decrements_stock(): void
     {
         $user = User::factory()->create();
+        $this->openShift($user);
         $product = $this->createProduct(stock: 5, price: 3000);
         $printer = Mockery::mock(ReceiptPrinter::class);
         $printer->shouldReceive('print')->once();
@@ -52,6 +54,7 @@ class TransactionHistoryTest extends TestCase
     public function test_payment_below_total_is_not_saved_or_printed(): void
     {
         $user = User::factory()->create();
+        $this->openShift($user);
         $product = $this->createProduct(stock: 5, price: 3000);
         $printer = Mockery::mock(ReceiptPrinter::class);
         $printer->shouldNotReceive('print');
@@ -72,6 +75,7 @@ class TransactionHistoryTest extends TestCase
     public function test_non_cash_payment_methods_save_exact_payment_without_change(): void
     {
         $user = User::factory()->create();
+        $this->openShift($user);
         $product = $this->createProduct(stock: 10, price: 3000);
         $printer = Mockery::mock(ReceiptPrinter::class);
         $printer->shouldReceive('print')->times(5);
@@ -101,6 +105,7 @@ class TransactionHistoryTest extends TestCase
     public function test_non_cash_payment_rejects_a_paid_amount_different_from_total(): void
     {
         $user = User::factory()->create();
+        $this->openShift($user);
         $product = $this->createProduct(stock: 5, price: 3000);
         $printer = Mockery::mock(ReceiptPrinter::class);
         $printer->shouldNotReceive('print');
@@ -121,6 +126,7 @@ class TransactionHistoryTest extends TestCase
     public function test_offline_transaction_sync_records_stock_conflicts_for_admin_review(): void
     {
         $cashier = User::factory()->create(['role' => 'kasir']);
+        $shift = $this->openShift($cashier);
         $product = $this->createProduct(stock: 2, price: 3000);
         $token = hash_hmac(
             'sha256',
@@ -180,7 +186,15 @@ class TransactionHistoryTest extends TestCase
             'is_offline' => true,
         ]);
         $this->assertSame(0, $product->fresh()->stock);
-        $this->assertStringContainsString('Produk Uji', $this->get(route('transactions.index'))->getContent());
+
+        $this->post(route('kasir.shift.close', $shift));
+
+        $this->get(route('transactions.index'))
+            ->assertOk()
+            ->assertSee('Produk Uji')
+            ->assertSee('Perlu pemeriksaan stok:')
+            ->assertSee('stok server 1')
+            ->assertSee('Stok berubah sejak perangkat offline');
     }
 
     public function test_offline_sync_rejects_modified_catalog_price(): void
@@ -216,6 +230,7 @@ class TransactionHistoryTest extends TestCase
     public function test_retried_offline_sync_is_idempotent(): void
     {
         $cashier = User::factory()->create(['role' => 'kasir']);
+        $this->openShift($cashier);
         $product = $this->createProduct(stock: 5, price: 3000);
         $token = hash_hmac(
             'sha256',
@@ -321,6 +336,15 @@ class TransactionHistoryTest extends TestCase
             'price' => $price,
             'stock' => $stock,
             'is_active' => true,
+        ]);
+    }
+
+    private function openShift(User $user, int $openingCash = 0): CashierShift
+    {
+        return CashierShift::query()->create([
+            'user_id' => $user->id,
+            'opening_cash' => $openingCash,
+            'opened_at' => now(),
         ]);
     }
 

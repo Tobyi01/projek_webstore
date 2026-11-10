@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use App\Events\OrderPlaced;
+use App\Models\CashierShift;
 use App\Models\Product;
 use App\Models\Sale;
 use App\Services\ReceiptPrinter;
@@ -49,6 +50,18 @@ class StrukController extends Controller
             ->map(fn ($items): int => (int) $items->sum('qty'));
 
         $sale = DB::transaction(function () use ($data, $quantities, $request): Sale {
+            $shift = CashierShift::query()
+                ->where('user_id', $request->user()->id)
+                ->whereNull('closed_at')
+                ->lockForUpdate()
+                ->first();
+
+            if (! $shift) {
+                throw ValidationException::withMessages([
+                    'shift' => 'Buka shift kasir sebelum menyimpan transaksi.',
+                ]);
+            }
+
             $products = Product::query()
                 ->whereIn('id', $quantities->keys())
                 ->lockForUpdate()
@@ -100,6 +113,7 @@ class StrukController extends Controller
             $sale = Sale::create([
                 'transaction_number' => $data['transaction_number'],
                 'user_id' => $request->user()->id,
+                'cashier_shift_id' => $shift->id,
                 'customer' => $data['customer'],
                 'payment_method' => $data['payment_method'],
                 'subtotal' => $subtotal,

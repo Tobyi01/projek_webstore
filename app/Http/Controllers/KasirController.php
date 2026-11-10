@@ -3,6 +3,9 @@
 namespace App\Http\Controllers;
 
 use App\Models\Product;
+use App\Models\CashierShift;
+use App\Models\Sale;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\View\View;
 
@@ -36,6 +39,20 @@ class KasirController extends Controller
             ),
         ])->values();
 
-        return view('kasir.index', compact('productData'));
+        $currentShift = CashierShift::query()
+            ->where('user_id', Auth::id())
+            ->whereNull('closed_at')
+            ->first();
+        $shiftCashSales = $currentShift
+            ? (float) Sale::query()
+                ->where('cashier_shift_id', $currentShift->id)
+                ->where('payment_method', 'Tunai')
+                ->sum('total')
+            : 0;
+        $shiftTransactionCount = $currentShift
+            ? Sale::query()->where('cashier_shift_id', $currentShift->id)->count()
+            : 0;
+
+        return view('kasir.index', compact('productData', 'currentShift', 'shiftCashSales', 'shiftTransactionCount'));
     }
 }

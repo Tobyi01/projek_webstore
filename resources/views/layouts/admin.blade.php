@@ -3,6 +3,7 @@
     $outOfStockProductCount = $isAdmin
         ? \App\Models\Product::query()->where('stock', '<=', 0)->count()
         : 0;
+    $hasOpenCashierShift = request()->attributes->get('has_open_cashier_shift', false);
 @endphp
 
 <!DOCTYPE html>
@@ -245,8 +246,23 @@
                     <a href="{{ route('admin.cashiers.index') }}" class="nav-link {{ request()->routeIs('admin.cashiers.*') ? 'active' : '' }}">
                         <i class="bi bi-people"></i><span>Kasir</span>
                     </a>
+                    <a href="{{ route('admin.cashier-shifts.index') }}" class="nav-link {{ request()->routeIs('admin.cashier-shifts.*') ? 'active' : '' }}">
+                        <i class="bi bi-clock-history"></i><span>Shift Kasir</span>
+                    </a>
                     <a href="{{ route('admin.login-activities.index') }}" class="nav-link {{ request()->routeIs('admin.login-activities.*') ? 'active' : '' }}">
                         <i class="bi bi-shield-check"></i><span>Aktivitas Login</span>
+                    </a>
+                    <a href="{{ route('admin.suppliers.index') }}" class="nav-link {{ request()->routeIs('admin.suppliers.*') ? 'active' : '' }}">
+                        <i class="bi bi-truck"></i><span>Supplier</span>
+                    </a>
+                    <a href="{{ route('admin.customers.index') }}" class="nav-link {{ request()->routeIs('admin.customers.*') ? 'active' : '' }}">
+                        <i class="bi bi-people-fill"></i><span>Pelanggan</span>
+                    </a>
+                    <a href="{{ route('admin.stock.index') }}" class="nav-link {{ request()->routeIs('admin.stock.*') ? 'active' : '' }}">
+                        <i class="bi bi-boxes"></i><span>Stok</span>
+                    </a>
+                    <a href="{{ route('admin.reports.index') }}" class="nav-link {{ request()->routeIs('admin.reports.*') ? 'active' : '' }}">
+                        <i class="bi bi-bar-chart"></i><span>Laporan</span>
                     </a>
                 @else
                     <a href="{{ route('products.index') }}" class="nav-link {{ request()->routeIs('products.*') ? 'active' : '' }}">
@@ -261,12 +277,18 @@
                 @endif
             </nav>
             <hr class="text-white">
-            <form method="POST" action="{{ route('logout') }}">
-                @csrf
-                <button type="submit" class="btn btn-danger w-100">
-                    <i class="bi bi-box-arrow-right me-1"></i>Keluar
-                </button>
-            </form>
+            @if ($hasOpenCashierShift)
+                <div class="text-center small text-white-50 px-2" role="status">
+                    <i class="bi bi-lock me-1" aria-hidden="true"></i>Tutup shift untuk keluar
+                </div>
+            @else
+                <form method="POST" action="{{ route('logout') }}">
+                    @csrf
+                    <button type="submit" class="btn btn-danger w-100">
+                        <i class="bi bi-box-arrow-right me-1"></i>Keluar
+                    </button>
+                </form>
+            @endif
         </aside>
         <div class="admin-workspace">
             <header class="admin-topbar">

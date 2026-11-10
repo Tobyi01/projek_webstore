@@ -2,6 +2,7 @@
 
 use App\Http\Middleware\Admin;
 use App\Http\Middleware\EnsureUserIsActive;
+use App\Http\Middleware\KeepUserInCashierShift;
 use App\Http\Middleware\RoleMiddleware;
 use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
@@ -25,7 +26,10 @@ return Application::configure(basePath: dirname(__DIR__))
             SubstituteBindings::class,
         ]);
 
-        $middleware->appendToGroup('web', EnsureUserIsActive::class);
+        $middleware->appendToGroup('web', [
+            EnsureUserIsActive::class,
+            KeepUserInCashierShift::class,
+        ]);
         $middleware->alias([
             'admin' => Admin::class,
             'active' => EnsureUserIsActive::class,

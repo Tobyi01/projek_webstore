@@ -11,6 +11,26 @@ class AdminCashierManagementTest extends TestCase
 {
     use RefreshDatabase;
 
+    public function test_admin_can_create_a_cashier_from_admin_panel(): void
+    {
+        $admin = User::factory()->create(['role' => 'admin']);
+
+        $this->actingAs($admin)
+            ->post(route('admin.cashiers.store'), [
+                'name' => 'Kasir Baru',
+                'email' => 'kasir.baru@example.com',
+                'password' => 'password',
+                'password_confirmation' => 'password',
+            ])
+            ->assertRedirect(route('admin.cashiers.index'));
+
+        $this->assertDatabaseHas('users', [
+            'email' => 'kasir.baru@example.com',
+            'role' => 'kasir',
+            'is_active' => true,
+        ]);
+    }
+
     public function test_admin_can_view_registered_cashiers_and_their_status(): void
     {
         $admin = User::factory()->create(['role' => 'admin']);

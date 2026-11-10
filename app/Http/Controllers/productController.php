@@ -109,14 +109,18 @@ class ProductController extends Controller
     {
         return $request->validate([
             'name' => ['required', 'string', 'max:255'],
+            'sku' => ['nullable', 'string', 'max:100'],
             'category' => ['nullable', 'string', 'max:255'],
+            'supplier_id' => ['nullable', 'integer', 'exists:suppliers,id'],
             'description' => ['nullable', 'string'],
             'price' => ['required', 'numeric', 'min:0'],
             'stock' => ['required', 'integer', 'min:0'],
+            'minimum_stock' => ['nullable', 'integer', 'min:0'],
             'image' => ['nullable', 'image', 'mimes:jpg,jpeg,png,webp,gif', 'max:2048'],
             'is_active' => ['nullable', 'boolean'],
         ]) + [
             'is_active' => $request->has('is_active') ? $request->boolean('is_active') : true,
+            'minimum_stock' => $request->input('minimum_stock', 5),
         ];
     }
 

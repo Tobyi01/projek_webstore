@@ -9,7 +9,7 @@
         <div class="align-items-center d-flex flex-wrap justify-content-between mb-3 gap-2">
             <div>
                 <h1 class="h5 mb-1">Akun Kasir</h1>
-                <p class="mb-0 text-muted small">Lihat, nonaktifkan, atau hapus akun kasir yang terdaftar.</p>
+                <p class="mb-0 text-muted small">Tambah, lihat, nonaktifkan, atau hapus akun kasir yang terdaftar.</p>
             </div>
             <span class="badge text-bg-primary">{{ $cashiers->total() }} kasir</span>
         </div>
@@ -17,6 +17,42 @@
         @if (session('status'))
             <div class="alert alert-success" role="status">{{ session('status') }}</div>
         @endif
+
+        <div class="card border-0 bg-light-subtle mb-4">
+            <div class="card-body">
+                <form method="POST" action="{{ route('admin.cashiers.store') }}" class="row g-3 align-items-end">
+                    @csrf
+                    <div class="col-md-4">
+                        <label class="form-label">Nama kasir</label>
+                        <input type="text" name="name" class="form-control" value="{{ old('name') }}" required>
+                    </div>
+                    <div class="col-md-4">
+                        <label class="form-label">Email</label>
+                        <input type="email" name="email" class="form-control" value="{{ old('email') }}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Password</label>
+                        <input type="password" name="password" class="form-control" required>
+                    </div>
+                    <div class="col-md-3">
+                        <label class="form-label">Konfirmasi password</label>
+                        <input type="password" name="password_confirmation" class="form-control" required>
+                    </div>
+                    <div class="col-md-1 d-grid">
+                        <button type="submit" class="btn btn-primary">Tambah</button>
+                    </div>
+                    @if ($errors->any())
+                        <div class="col-12">
+                            <div class="text-danger small">
+                                @foreach ($errors->all() as $error)
+                                    <div>{{ $error }}</div>
+                                @endforeach
+                            </div>
+                        </div>
+                    @endif
+                </form>
+            </div>
+        </div>
 
         <div class="table-responsive">
             <table class="table align-middle">

@@ -78,7 +78,13 @@
                         <article class="sale-entry">
                             <div class="sale-summary">
                                 <time class="sale-time" datetime="{{ $sale->sold_at->toIso8601String() }}">{{ $sale->sold_at->format('H:i') }} · {{ $sale->transaction_number }}</time>
-                                <div class="sale-identity"><strong>{{ $sale->customer }}</strong><small>{{ number_format($sale->items->sum('quantity'), 0, ',', '.') }} barang@if ($sale->is_offline) · transaksi offline disinkronkan @endif</small></div>
+                                <div class="sale-identity">
+                                    <strong>{{ $sale->customer }}</strong>
+                                    <small>{{ number_format($sale->items->sum('quantity'), 0, ',', '.') }} barang</small>
+                                    @if ($sale->is_offline)
+                                        <small>Transaksi offline disinkronkan</small>
+                                    @endif
+                                </div>
                                 <span class="payment-badge">{{ $sale->payment_method }}</span>
                                 <strong class="sale-total">Rp {{ number_format($sale->total, 0, ',', '.') }}</strong>
                             </div>

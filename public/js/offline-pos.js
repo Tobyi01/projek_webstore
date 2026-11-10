@@ -57,6 +57,13 @@
                 items: cart.map(item => ({ ...item })),
             };
             await window.NesiaOffline.queueTransaction(sale);
+            sale.items.forEach(item => {
+                const product = snapshot.products.find(row => row.id === item.product_id);
+                if (product) product.stock = Math.max(0, product.stock - item.qty);
+            });
+            snapshot.savedAt = new Date().toISOString();
+            await window.NesiaOffline.saveSnapshot(snapshot).catch(() => {});
+            renderProducts();
             $('receipt').innerHTML = `<h2>NesiaStore · Salinan struk</h2><p>No. transaksi: ${sale.transaction_number}</p><p>Waktu: ${new Date(sale.sold_at).toLocaleString('id-ID')}</p><p>Pelanggan: ${sale.customer}</p>${sale.items.map(item => `<div class="cart-item"><span>${item.product_name} × ${item.qty}</span><strong>${money(item.unit_price * item.qty)}</strong></div>`).join('')}<p class="total">Total ${money(total)}</p><p>${sale.payment_method}: ${money(sale.paid)}</p><p>Periksa antrean sinkronisasi sebelum menutup sesi.</p>`;
             window.print();
             cart = [];

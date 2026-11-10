@@ -1,7 +1,13 @@
 <?php
 
 use App\Http\Controllers\Admin\CashierController;
+use App\Http\Controllers\Admin\CashierShiftController as AdminCashierShiftController;
+use App\Http\Controllers\Admin\CustomerController;
 use App\Http\Controllers\Admin\LoginActivityController;
+use App\Http\Controllers\Admin\ReportController;
+use App\Http\Controllers\Admin\StockMovementController;
+use App\Http\Controllers\Admin\SupplierController;
+use App\Http\Controllers\CashierShiftController;
 use App\Http\Controllers\KasirController;
 use App\Http\Controllers\OfflineTransactionController;
 use App\Http\Controllers\ProductController;
@@ -76,9 +82,26 @@ Route::middleware(['auth', 'admin'])->group(function () use ($adminDashboard) {
 
     Route::get('/admin', $adminDashboard)->name('admin.dashboard');
     Route::get('/admin/kasir', [CashierController::class, 'index'])->name('admin.cashiers.index');
+    Route::get('/admin/shift-kasir', [AdminCashierShiftController::class, 'index'])->name('admin.cashier-shifts.index');
+    Route::post('/admin/kasir', [CashierController::class, 'store'])->name('admin.cashiers.store');
     Route::patch('/admin/kasir/{user}/status', [CashierController::class, 'toggleStatus'])->name('admin.cashiers.status');
     Route::delete('/admin/kasir/{user}', [CashierController::class, 'destroy'])->name('admin.cashiers.destroy');
     Route::get('/admin/aktivitas-login', [LoginActivityController::class, 'index'])->name('admin.login-activities.index');
+    Route::get('/admin/supplier', [SupplierController::class, 'index'])->name('admin.suppliers.index');
+    Route::post('/admin/supplier', [SupplierController::class, 'store'])->name('admin.suppliers.store');
+    Route::get('/admin/supplier/{supplier}/edit', [SupplierController::class, 'edit'])->name('admin.suppliers.edit');
+    Route::put('/admin/supplier/{supplier}', [SupplierController::class, 'update'])->name('admin.suppliers.update');
+    Route::delete('/admin/supplier/{supplier}', [SupplierController::class, 'destroy'])->name('admin.suppliers.destroy');
+
+    Route::get('/admin/pelanggan', [CustomerController::class, 'index'])->name('admin.customers.index');
+    Route::post('/admin/pelanggan', [CustomerController::class, 'store'])->name('admin.customers.store');
+    Route::get('/admin/pelanggan/{customer}/edit', [CustomerController::class, 'edit'])->name('admin.customers.edit');
+    Route::put('/admin/pelanggan/{customer}', [CustomerController::class, 'update'])->name('admin.customers.update');
+    Route::delete('/admin/pelanggan/{customer}', [CustomerController::class, 'destroy'])->name('admin.customers.destroy');
+
+    Route::get('/admin/stok', [StockMovementController::class, 'index'])->name('admin.stock.index');
+    Route::post('/admin/stok/adjust', [StockMovementController::class, 'adjust'])->name('admin.stock.adjust');
+    Route::get('/admin/laporan', [ReportController::class, 'index'])->name('admin.reports.index');
 });
 
 Route::middleware(['auth', 'verified'])->group(function () {
@@ -89,6 +112,12 @@ Route::middleware(['auth', 'verified'])->group(function () {
 Route::get('/kasir', [KasirController::class, 'index'])
     ->middleware(['auth', 'verified'])
     ->name('kasir.index');
+Route::post('/kasir/shift', [CashierShiftController::class, 'start'])
+    ->middleware(['auth', 'verified', 'role:admin,kasir', 'throttle:10,1'])
+    ->name('kasir.shift.start');
+Route::post('/kasir/shift/{shift}/close', [CashierShiftController::class, 'close'])
+    ->middleware(['auth', 'verified', 'role:admin,kasir', 'throttle:10,1'])
+    ->name('kasir.shift.close');
 Route::post('/offline-transactions/sync', [OfflineTransactionController::class, 'sync'])
     ->middleware(['auth', 'verified', 'role:admin,kasir', 'throttle:30,1'])
     ->name('offline-transactions.sync');

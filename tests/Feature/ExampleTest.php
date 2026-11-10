@@ -15,7 +15,7 @@ class ExampleTest extends TestCase
         $response = $this->get('/');
 
         $response->assertOk()
-            ->assertSee('Aplikasi kasir &amp; manajemen toko', false)
+            ->assertSee('Platform Kasir &amp; Manajemen Toko Next-Gen', false)
             ->assertSee('Apa yang bisa dilakukan dengan NesiaStore?')
             ->assertSee('Proses transaksi penjualan')
             ->assertSee('Kelola produk dan stok')

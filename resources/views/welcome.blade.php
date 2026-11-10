@@ -140,6 +140,149 @@
         @media (prefers-reduced-motion: reduce) {
             *, *::before, *::after { animation-duration: .01ms !important; animation-iteration-count: 1 !important; scroll-behavior: auto !important; transition-duration: .01ms !important; }
         }
+        body {
+            background:
+                radial-gradient(ellipse at 86% 8%, rgba(32, 132, 255, .30), transparent 28%),
+                radial-gradient(ellipse at 14% 42%, rgba(45, 205, 235, .25), transparent 32%),
+                radial-gradient(ellipse at 76% 74%, rgba(115, 139, 255, .16), transparent 34%),
+                #eef6ff;
+        }
+        .page { max-width: 1180px; padding: 0 4.4%; }
+        .topbar {
+            background: linear-gradient(110deg, rgba(220, 244, 255, .88), rgba(255, 255, 255, .82) 52%, rgba(237, 244, 255, .9));
+            border: 1px solid rgba(255, 255, 255, .8);
+            border-radius: 13px;
+            box-shadow: 0 12px 32px rgba(48, 101, 163, .09);
+            margin-top: 7px;
+            min-height: 54px;
+            padding: 0 14px;
+        }
+        .brand { gap: .55rem; }
+        .brand-icon { border-radius: 9px; height: 31px; width: 31px; }
+        .brand-name { font-size: .9rem; font-weight: 650; }
+        .brand-name small { display: none; }
+        .top-login {
+            background: rgba(255, 255, 255, .8);
+            border: 1px solid rgba(24, 58, 103, .08);
+            border-radius: 10px;
+            box-shadow: 0 3px 8px rgba(27, 55, 96, .08);
+            color: #10213c;
+            padding: .65rem 1rem;
+        }
+        .hero {
+            gap: 5%;
+            grid-template-columns: minmax(0, .92fr) minmax(0, 1.08fr);
+            min-height: 420px;
+            padding: 3.25rem 1rem 2.4rem;
+        }
+        .hero-copy { max-width: 430px; }
+        .eyebrow {
+            background: rgba(198, 226, 255, .76);
+            border-radius: 999px;
+            color: #133050;
+            font-size: .72rem;
+            gap: .45rem;
+            letter-spacing: 0;
+            padding: .42rem .72rem;
+            text-transform: none;
+        }
+        .eyebrow::before { display: none; }
+        .hero-copy > .eyebrow::after {
+            content: "✦";
+            font-size: .9rem;
+            order: -1;
+        }
+        h1 {
+            font-family: "Segoe UI", Arial, sans-serif;
+            font-size: clamp(3.2rem, 5.8vw, 4.15rem);
+            font-weight: 800;
+            letter-spacing: -.075em;
+            line-height: 1.02;
+            margin: 1rem 0 .85rem;
+        }
+        h1 span {
+            background: linear-gradient(100deg, #176bdb 5%, #7862d6 58%, #22a8ac 100%);
+            background-clip: text;
+            color: transparent;
+            display: block;
+            font-family: inherit;
+            font-style: normal;
+            font-weight: 800;
+            letter-spacing: -.075em;
+            -webkit-background-clip: text;
+        }
+        .intro { color: #25364e; font-size: .78rem; line-height: 1.6; max-width: 360px; }
+        .hero-actions { gap: .65rem; margin-top: 1.1rem; }
+        .cta {
+            background: #102d54;
+            border-radius: 9px;
+            box-shadow: 0 5px 12px rgba(16, 45, 84, .2);
+            font-size: .75rem;
+            gap: .55rem;
+            padding: .72rem .9rem;
+        }
+        .cta:hover { background: #1b477f; }
+        .text-link {
+            align-items: center;
+            border: 1px solid rgba(25, 50, 84, .28);
+            border-radius: 9px;
+            color: #263c59;
+            display: inline-flex;
+            gap: .45rem;
+            padding: .68rem .82rem;
+        }
+        .text-link::after { content: "▷"; font-size: .72rem; }
+        .hero-note {
+            color: #34445a;
+            flex-wrap: wrap;
+            font-size: .68rem;
+            gap: .45rem 1rem;
+            margin-top: 1.25rem;
+        }
+        .hero-note i { color: #132d50; }
+        .dashboard-wrap { z-index: 0; }
+        .dashboard-wrap::before {
+            background: radial-gradient(circle, rgba(25, 175, 232, .7), rgba(39, 114, 230, .25) 48%, transparent 72%);
+            border-radius: 50%;
+            content: "";
+            height: 220px;
+            position: absolute;
+            right: -7%;
+            top: -10%;
+            width: 220px;
+            z-index: -1;
+        }
+        .dashboard-wrap::after {
+            background: linear-gradient(145deg, #21c0df, #2859d7 70%);
+            border-radius: 50%;
+            box-shadow: 0 8px 20px rgba(22, 89, 205, .28);
+            content: "";
+            height: 36px;
+            position: absolute;
+            right: 24%;
+            top: -13%;
+            width: 36px;
+            z-index: 1;
+        }
+        .dashboard {
+            background: rgba(239, 246, 255, .94);
+            border: 1px solid rgba(255, 255, 255, .9);
+            border-radius: 15px;
+            box-shadow: 0 24px 54px rgba(32, 78, 145, .2);
+            padding: .9rem;
+        }
+        .sales-card, .stock-card { border-color: #e5ecf5; }
+        .bar { background: #36b5b2; }
+        .bar:nth-child(odd) { background: #1673dc; }
+        .bar:nth-child(6) { background: #1673dc; }
+        .about { border-top-color: rgba(30, 79, 145, .12); }
+        @media (max-width: 900px) {
+            .hero { min-height: 390px; padding-left: .4rem; padding-right: .4rem; }
+            h1 { font-size: clamp(3rem, 6.2vw, 3.7rem); }
+        }
+        @media (max-width: 680px) {
+            .hero { min-height: auto; padding: 3rem 0 3.6rem; }
+        }
     </style>
 </head>
 <body>
@@ -147,29 +290,32 @@
         <nav class="topbar" aria-label="Navigasi utama">
             <a class="brand" href="{{ url('/') }}" aria-label="NesiaStore beranda">
                 <span class="brand-icon"><i class="bi bi-shop-window" aria-hidden="true"></i></span>
-                <span class="brand-name">NesiaStore<small>OPERASIONAL TOKO, TANPA RIBET</small></span>
+                <span class="brand-name">NesiaStore</span>
             </a>
             <div class="top-links">
                 <a class="top-login" href="{{ route('login') }}">Masuk</a>
-                <a class="top-signup" href="{{ route('register') }}">Mulai sekarang <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
             </div>
         </nav>
         <section class="hero" aria-labelledby="hero-title">
             <div class="hero-copy">
-                <span class="eyebrow">Aplikasi kasir &amp; manajemen toko</span>
+                <span class="eyebrow">Platform Kasir &amp; Manajemen Toko Next-Gen</span>
                 <h1 id="hero-title">Kelola toko.<span>Dari satu tempat.</span></h1>
                 <p class="intro">NesiaStore adalah aplikasi berbasis web untuk mencatat penjualan, mengelola produk dan stok, serta melihat riwayat transaksi toko dalam satu sistem.</p>
                 <div class="hero-actions">
                     <a class="cta" href="{{ route('login') }}">Masuk ke aplikasi <i class="bi bi-arrow-up-right" aria-hidden="true"></i></a>
                     <a class="text-link" href="#tentang-nesiastore">Kenali fitur</a>
                 </div>
-                <div class="hero-note"><i class="bi bi-check-circle-fill" aria-hidden="true"></i>Dirancang untuk membantu operasional toko harian.</div>
+                <div class="hero-note">
+                    <span><i class="bi bi-check2" aria-hidden="true"></i> Gratis Coba</span>
+                    <span><i class="bi bi-check2" aria-hidden="true"></i> Laporan Real-time</span>
+                    <span><i class="bi bi-check2" aria-hidden="true"></i> Kelola stok</span>
+                </div>
             </div>
             <div class="dashboard-wrap" aria-label="Contoh tampilan ringkasan dashboard toko">
                 <span class="orbit" aria-hidden="true"></span>
                 <div class="dashboard">
                     <div class="dash-top">
-                        <div class="dash-brand"><span class="dash-logo"><i class="bi bi-shop" aria-hidden="true"></i></span><span>NesiaStore<small>CONTOH DASHBOARD</small></span></div>
+                        <div class="dash-brand"><span class="dash-logo"><i class="bi bi-shop" aria-hidden="true"></i></span><span>NesiaStore</span></div>
                         <span class="dash-day">Hari ini <i class="bi bi-chevron-down" aria-hidden="true"></i></span>
                     </div>
                     <div class="dash-content">
