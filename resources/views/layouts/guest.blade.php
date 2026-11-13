@@ -23,16 +23,19 @@
         <script src="{{ asset('js/pwa.js') }}?v=20261109-1" defer></script>
     </head>
     <body class="font-sans text-gray-900 antialiased">
-        <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
-            <div>
-                <a href="/">
-                    <x-application-logo class="w-20 h-20 fill-current text-gray-500" />
-                </a>
-            </div>
-
-            <div class="w-full sm:max-w-md mt-6 px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+        @if (request()->routeIs('password.request', 'password.reset'))
                 {{ $slot }}
-            </div>
-        </div>
+        @else
+                <div class="min-h-screen flex flex-col sm:justify-center items-center pt-6 sm:pt-0 bg-gray-100 dark:bg-gray-900">
+                    <a href="{{ url('/') }}" class="mb-6 inline-flex items-center gap-3 text-gray-800 dark:text-gray-100 no-underline">
+                        <img src="{{ asset('assets/img/nesia-logo.png') }}" alt="" class="h-10 w-10 rounded-lg object-contain">
+                        <span class="text-lg font-bold tracking-tight">NesiaStore</span>
+                    </a>
+
+                    <div class="w-full sm:max-w-md px-6 py-4 bg-white dark:bg-gray-800 shadow-md overflow-hidden sm:rounded-lg">
+                        {{ $slot }}
+                    </div>
+                </div>
+        @endif
     </body>
 </html>

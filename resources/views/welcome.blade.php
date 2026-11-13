@@ -36,11 +36,11 @@
         .top-signup:hover, .cta:hover { background: #0e4fae; transform: translateY(-2px); }
         .hero { align-items: center; display: grid; gap: 7%; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); min-height: 680px; padding: 4.3rem 0 4.8rem; }
         .hero-copy { animation: enter .75s .1s ease both; max-width: 510px; }
-        .eyebrow { align-items: center; color: var(--accent-blue); display: inline-flex; font-size: .68rem; font-weight: 750; gap: .55rem; letter-spacing: .14em; text-transform: uppercase; }
+        .eyebrow { align-items: center; color: var(--accent-blue); display: inline-flex; font-size: .62rem; font-weight: 750; gap: .55rem; letter-spacing: .12em; text-transform: uppercase; }
         .eyebrow::before { background: var(--accent-blue); border-radius: 50%; content: ""; height: 7px; width: 7px; }
-        h1 { font-size: clamp(3.35rem, 6.5vw, 6.2rem); font-weight: 650; letter-spacing: -.085em; line-height: .96; margin: 1.45rem 0 1.3rem; }
-        h1 span { color: var(--accent-blue); display: block; font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-style: italic; letter-spacing: -.075em; }
-        .intro { color: #5c6f8d; font-size: 1rem; line-height: 1.8; margin: 0; max-width: 400px; }
+        h1 { font-size: clamp(2.6rem, 5vw, 4.8rem); font-weight: 700; letter-spacing: -.075em; line-height: .95; margin: 1.2rem 0 1rem; }
+        h1 span { color: var(--accent-blue); display: block; font-family: Georgia, "Times New Roman", serif; font-weight: 400; font-style: italic; letter-spacing: -.065em; }
+        .intro { color: #5c6f8d; font-size: .95rem; line-height: 1.7; margin: 0; max-width: 400px; }
         .hero-actions { align-items: center; display: flex; flex-wrap: wrap; gap: 1.2rem; margin-top: 2rem; }
         .cta { align-items: center; background: var(--accent-blue); border-radius: 7px; box-shadow: 0 8px 20px rgba(23,105,220,.2); color: #fff; display: inline-flex; font-size: .82rem; font-weight: 750; gap: .8rem; padding: .95rem 1.15rem; text-decoration: none; transition: background .2s ease, transform .2s ease; }
         .cta i { font-size: .92rem; }

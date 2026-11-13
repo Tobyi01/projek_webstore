@@ -53,4 +53,28 @@ class AuthenticationTest extends TestCase
         $this->assertGuest();
         $response->assertRedirect('/');
     }
+
+    public function test_users_can_request_password_reset_link(): void
+    {
+        $user = User::factory()->create();
+
+        $response = $this->from('/login')->post('/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertRedirect('/login');
+        $response->assertSessionHas('status');
+    }
+
+    public function test_inactive_users_cannot_request_password_reset_link(): void
+    {
+        $user = User::factory()->create(['is_active' => false]);
+
+        $response = $this->from('/forgot-password')->post('/forgot-password', [
+            'email' => $user->email,
+        ]);
+
+        $response->assertRedirect('/forgot-password');
+        $response->assertSessionHasErrors(['email']);
+    }
 }
